@@ -1,0 +1,74 @@
+.header {
+  position: relative;
+  width: 95vw; /* full width of the viewport */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between; /* space between logo and nav */
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: whitesmoke;
+  color: #fff;
+}
+
+/* Make nav links spread evenly */
+.nav {
+  display: flex;
+  justify-content: space-between; /* evenly space links */
+  align-items: center;
+  flex: 1; /* let it take available space */
+  margin-left: 20rem; /* push it away from logo a bit */
+}
+
+.nav a {
+  color: black;
+  text-decoration: none;
+  margin: 0 1rem; /* space between links */
+}
+
+.logo {
+  color: black;
+  margin-left: 70px;
+}
+
+.login-button {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 30px; /* rounder edges */
+  width: 100px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: small;
+}
+.nav .right-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 4rem; /* prevent from touching edge */
+}
+
+.nav .contact-link {
+    color: green;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
+  }
+
+  .nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .nav .center-links,
+  .nav .right-links {
+    margin-right: 0;
+  }
+}
