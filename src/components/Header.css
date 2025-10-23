@@ -41,6 +41,29 @@
   transition: all 0.3s ease;
   font-size: small;
 }
+
+.dashboard-button {
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: small;
+  margin: 0 1rem;
+}
+
+.dashboard-button:hover {
+  background-color: #535bf2;
+  transform: translateY(-2px);
+}
+
+.login-button:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+}
+
 .nav .right-links {
   display: flex;
   align-items: center;
@@ -70,5 +93,9 @@
   .nav .center-links,
   .nav .right-links {
     margin-right: 0;
+  }
+
+  .dashboard-button {
+    margin: 0.5rem 0;
   }
 }

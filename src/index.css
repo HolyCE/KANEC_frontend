@@ -1,11 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 20%;
+
+    --primary: 220 15% 15%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 220 10% 96%;
+    --secondary-foreground: 220 15% 20%;
+
+    --muted: 220 10% 96%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 145 65% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 145 65% 48%;
+
+    --radius: 0.75rem;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(145, 65%, 48%), hsl(145, 70%, 55%));
+    --gradient-progress: linear-gradient(90deg, hsl(145, 65%, 48%) 0%, hsl(35, 90%, 55%) 100%);
+    --shadow-card: 0 2px 8px -2px hsl(220 15% 20% / 0.08);
+    --shadow-card-hover: 0 8px 24px -4px hsl(220 15% 20% / 0.12);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 18% 12%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 16% 16%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 16% 16%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 220 15% 15%;
+
+    --secondary: 220 14% 20%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 14% 20%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 145 65% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 14% 24%;
+    --input: 220 14% 24%;
+    --ring: 145 65% 48%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #213547;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,7 +120,7 @@
 }
 
 a {
-  font-size:small;
+  font-size: small;
   color: #646cff;
   text-decoration: inherit;
 }
@@ -27,15 +133,16 @@ body {
   padding: 0;
   display: grid;
   min-width: 320px;
-  min-height: 100vh; /* Fixed typo: '100wvh' → '100vh' */
-  font-family: Arial, sans-serif;
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  min-height: 100vh;
+  font-family: 'Poppins', Arial, sans-serif;
+  overflow-x: hidden;
+  background-color: #ffffff;
 }
-
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  font-family: 'Poppins', system-ui, sans-serif;
 }
 
 button {
@@ -44,8 +151,8 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font-family: 'Poppins', system-ui, sans-serif;
+  background-color: #f9f9f9;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -57,15 +164,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Ensure all text elements use Poppins */
+h1, h2, h3, h4, h5, h6, p, span, div, input, textarea, select, button, a {
+  font-family: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
