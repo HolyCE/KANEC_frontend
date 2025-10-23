@@ -6,13 +6,7 @@ function Header() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    alert('Redirecting to Login Page...');
-    // For now, redirect to dashboard since we don't have login
-    navigate('/dashboard');
-  };
-
-  const handleDashboard = () => {
-    navigate('/dashboard');
+    navigate('/signin');
   };
 
   return (
@@ -27,10 +21,6 @@ function Header() {
           <Link to="/">Home</Link>
           <Link to="/projects">Projects</Link>
           <Link to="/transparency">Transparency</Link>
-          {/* Add Dashboard link */}
-          <button className="dashboard-button" onClick={handleDashboard}>
-            Dashboard
-          </button>
         </div>
 
         {/* Right group */}

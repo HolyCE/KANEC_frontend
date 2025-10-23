@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Projects from './pages/Projects';
+import SignInPage from './pages/SignInPage';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 
@@ -10,13 +11,15 @@ import Dashboard from './pages/dashboard/Dashboard';
 const AppContent = () => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
+  const isSignInRoute = location.pathname === '/signin';
 
   return (
     <>
-      {!isDashboardRoute && <Header />}
+      {!isDashboardRoute && !isSignInRoute && <Header />}
       <Routes>
         <Route path="/" element={<Hero />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/signin" element={<SignInPage />} />
         
         {/* Dashboard nested routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>
