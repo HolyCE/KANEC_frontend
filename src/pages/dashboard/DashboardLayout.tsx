@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -20,6 +20,7 @@ import './DashboardLayout.css';
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -29,6 +30,14 @@ const DashboardLayout = () => {
     { icon: FileText, label: 'Impact Reports', path: '/dashboard/reports' },
     { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
   ];
+
+  const handleLogout = () => {
+    // You can add any logout logic here (clear tokens, etc.)
+    console.log('Logging out...');
+    
+    // Redirect to SignInPage
+    navigate('/signin');
+  };
 
   return (
     <div className="dashboard-container">
@@ -83,7 +92,7 @@ const DashboardLayout = () => {
             </div>
           </div>
 
-          <button className="logout-btn">
+          <button className="logout-btn" onClick={handleLogout}>
             <LogOut size={16} />
             <span>Logout</span>
           </button>

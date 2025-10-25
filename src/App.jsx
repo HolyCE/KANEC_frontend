@@ -8,6 +8,10 @@ import Projects from './pages/Projects';
 import SignInPage from './pages/SignInPage';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
+import ProjectsPage from './pages/dashboard/ProjectsPage';
+import Donations from './pages/dashboard/Donations';
+import AIInsights from './pages/dashboard/AIInsights';
+import Reports from './pages/dashboard/Reports';
 
 const AppContent = () => {
   const location = useLocation();
@@ -51,11 +55,11 @@ const AppContent = () => {
         {/* Dashboard nested routes (no header/footer) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="projects" element={<Dashboard />} />
-          <Route path="donations" element={<Dashboard />} />
-          <Route path="insights" element={<Dashboard />} />
-          <Route path="reports" element={<Dashboard />} />
-          <Route path="settings" element={<Dashboard />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="donations" element={<Donations />} />
+          <Route path="insights" element={<AIInsights />} />
+          <Route path="reports" element={<Reports />} />
+          {/* Settings route removed as requested */}
         </Route>
       </Routes>
     </>
