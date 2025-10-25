@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle, Wallet } from "lucide-react";
+import { CheckCircle, Wallet, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import "./Donations.css";
 
@@ -11,9 +11,18 @@ const projects = [
   { id: 5, name: "Youth Empowerment Program", category: "Education" },
 ];
 
+const currencies = [
+  { code: "NGN", name: "Nigerian Naira", symbol: "₦" },
+  { code: "USD", name: "US Dollar", symbol: "$" },
+  { code: "EUR", name: "Euro", symbol: "€" },
+  { code: "GBP", name: "British Pound", symbol: "£" },
+  { code: "HBAR", name: "Hedera HBAR", symbol: "ℏ" },
+];
+
 const Donations = () => {
   const [selectedProject, setSelectedProject] = useState("");
   const [amount, setAmount] = useState("");
+  const [selectedCurrency, setSelectedCurrency] = useState("NGN");
   const walletAddress = "0xA3D...F98";
   const transactionFee = "~0.0001 HBAR";
   const network = "Hedera Mainnet";
@@ -27,9 +36,14 @@ const Donations = () => {
       toast.error("Please enter a valid donation amount");
       return;
     }
-    toast.success("Donation processed successfully via Hedera!");
+    toast.success(`Donation of ${getCurrencySymbol()}${amount} processed successfully via Hedera!`);
     setSelectedProject("");
     setAmount("");
+  };
+
+  const getCurrencySymbol = () => {
+    const currency = currencies.find(curr => curr.code === selectedCurrency);
+    return currency ? currency.symbol : "₦";
   };
 
   return (
@@ -92,16 +106,42 @@ const Donations = () => {
               </div>
             </div>
 
-            <div className="form-field">
-              <label htmlFor="amount" className="form-label">Donation Amount (NGN)</label>
-              <input
-                id="amount"
-                type="number"
-                placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="custom-input"
-              />
+            <div className="amount-section">
+              <div className="form-field amount-input-field">
+                <label htmlFor="amount" className="form-label">Donation Amount</label>
+                <div className="amount-input-container">
+                  <span className="currency-symbol">{getCurrencySymbol()}</span>
+                  <input
+                    id="amount"
+                    type="number"
+                    placeholder="Enter amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="custom-input amount-input"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              <div className="form-field currency-field">
+                <label htmlFor="currency" className="form-label">Currency</label>
+                <div className="custom-select">
+                  <select 
+                    id="currency"
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    className="select-trigger"
+                  >
+                    {currencies.map((currency) => (
+                      <option key={currency.code} value={currency.code}>
+                        {currency.code} - {currency.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="select-arrow">▼</div>
+                </div>
+              </div>
             </div>
 
             <div className="transaction-info">
@@ -116,6 +156,12 @@ const Donations = () => {
               <div className="info-row">
                 <span className="info-label">Wallet</span>
                 <span className="info-value">{walletAddress}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Selected Currency</span>
+                <span className="info-value">
+                  {selectedCurrency} ({getCurrencySymbol()})
+                </span>
               </div>
             </div>
 
