@@ -550,9 +550,15 @@
 
 /* Mobile Responsive */
 @media (max-width: 800px) {
+  .dashboard-container {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
   .dashboard-sidebar {
     transform: translateX(-100%);
     animation: none;
+    width: 280px;
   }
 
   .dashboard-sidebar.open {
@@ -584,6 +590,8 @@
   .dashboard-main {
     margin-left: 0;
     animation: none;
+    width: 100%;
+    min-width: 0;
   }
 
   .menu-toggle {
@@ -591,7 +599,12 @@
   }
 
   .search-container {
-    max-width: 200px;
+    max-width: 150px;
+  }
+
+  .dashboard-search {
+    font-size: 12px;
+    padding: 6px 8px 6px 32px;
   }
 
   .network-btn span {
@@ -603,6 +616,26 @@
   }
 
   .dashboard-content {
-    padding: 16px;
+    padding: 12px;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .dashboard-header {
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  /* Ensure no horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 }

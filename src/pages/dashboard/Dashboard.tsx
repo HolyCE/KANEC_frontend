@@ -1,8 +1,7 @@
-import { ArrowRight, TrendingUp, FolderOpen, CheckCircle, ExternalLink } from 'lucide-react';
+import { ArrowRight, TrendingUp, FolderOpen, CheckCircle, ExternalLink, Calendar, Hash } from 'lucide-react';
 import DonationChart from './components/DonationChart';
 import StatsCard from './components/StatsCard';
 import RecommendationCard from './components/RecommendationCard';
-import DonationsTable from './components/DonationsTable';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -47,6 +46,37 @@ const Dashboard = () => {
       matchScore: '82% match',
       description: 'Similar to your solar power donations',
       category: 'Environment',
+    }
+  ];
+
+  const recentDonations = [
+    {
+      project: 'Clean Water Initiative',
+      amount: '₦50,000',
+      status: 'Completed',
+      date: '2024-01-15',
+      transactionHash: '0x1a2b...3c4d'
+    },
+    {
+      project: 'Education for All',
+      amount: '₦35,000',
+      status: 'Completed',
+      date: '2024-01-12',
+      transactionHash: '0x5e6f...7g8h'
+    },
+    {
+      project: 'Healthcare Access',
+      amount: '₦45,000',
+      status: 'Completed',
+      date: '2024-01-10',
+      transactionHash: '0x9i0j...1k2l'
+    },
+    {
+      project: 'Women Empowerment',
+      amount: '₦28,000',
+      status: 'Completed',
+      date: '2024-01-08',
+      transactionHash: '0x3m4n...5o6p'
     }
   ];
 
@@ -99,8 +129,38 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Donations Table */}
-      <DonationsTable />
+      {/* Recent Donations Cards */}
+      <div className="donations-cards-section">
+        <div className="section-header">
+          <h3 className="section-title">Recent Donations</h3>
+          <p className="section-subtitle">Your latest impact contributions</p>
+        </div>
+        <div className="donations-cards-grid">
+          {recentDonations.map((donation, index) => (
+            <div key={index} className="donation-card">
+              <div className="donation-header">
+                <h4 className="donation-project">{donation.project}</h4>
+                <span className="donation-amount">{donation.amount}</span>
+              </div>
+              <div className="donation-details">
+                <div className="donation-meta">
+                  <div className="meta-item">
+                    <Calendar size={14} />
+                    <span>{donation.date}</span>
+                  </div>
+                  <div className="meta-item">
+                    <Hash size={14} />
+                    <span className="transaction-hash">{donation.transactionHash}</span>
+                  </div>
+                </div>
+                <div className="donation-status">
+                  <span className="status-badge">{donation.status}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

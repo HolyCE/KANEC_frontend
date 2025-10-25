@@ -239,29 +239,114 @@
   background: #059669;
 }
 
-/* Responsive Styles */
-@media (max-width: 1200px) {
-  .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
+/* Mobile Responsive */
+@media (max-width: 800px) {
   .projects-page {
-    padding: 1rem;
+    padding: 12px;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .projects-title {
+    font-size: 24px;
+  }
+
+  .projects-subtitle {
+    font-size: 13px;
   }
 
   .projects-filters {
     flex-direction: column;
     align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .filter-left {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .category-select {
+    min-width: 100%;
+    width: 100%;
   }
 
   .filter-right {
     width: 100%;
     justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .status-badge {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
   }
 
   .projects-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .project-card {
+    margin: 0;
+  }
+
+  .project-image-container {
+    height: 160px;
+  }
+
+  .project-card-content {
+    padding: 16px;
+  }
+
+  .project-card-title {
+    font-size: 16px;
+  }
+
+  .project-card-description {
+    font-size: 13px;
+  }
+
+  .project-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .funding-amounts {
+    font-size: 13px;
+  }
+
+  .view-details-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* Ensure no horizontal scroll */
+  .projects-page * {
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-filters {
+    gap: 12px;
+  }
+  
+  .filter-right {
+    gap: 6px;
+  }
+  
+  .status-badge {
+    padding: 6px 10px;
+    font-size: 12px;
   }
 }
