@@ -12,6 +12,7 @@ import ProjectsPage from './pages/dashboard/ProjectsPage';
 import Donations from './pages/dashboard/Donations';
 import AIInsights from './pages/dashboard/AIInsights';
 import Reports from './pages/dashboard/Reports';
+import Settings from './pages/dashboard/Settings';
 
 const AppContent = () => {
   const location = useLocation();
@@ -59,6 +60,7 @@ const AppContent = () => {
           <Route path="donations" element={<Donations />} />
           <Route path="insights" element={<AIInsights />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
           {/* Settings route removed as requested */}
         </Route>
       </Routes>
