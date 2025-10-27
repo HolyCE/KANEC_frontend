@@ -111,6 +111,9 @@
   overflow: hidden;
   border: 1px solid hsl(var(--border));
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .project-card:hover {
@@ -147,6 +150,10 @@
 
 .project-card-content {
   padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .project-card-title {
@@ -154,6 +161,7 @@
   font-weight: 600;
   color: hsl(var(--foreground));
   margin-bottom: 0.5rem;
+  text-align: left;
 }
 
 .project-card-description {
@@ -161,6 +169,7 @@
   color: hsl(var(--muted-foreground));
   line-height: 1.5;
   margin-bottom: 1rem;
+  text-align: left;
 }
 
 .project-meta {
@@ -168,6 +177,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  text-align: left;
 }
 
 .project-location {
@@ -176,6 +186,7 @@
   gap: 0.375rem;
   font-size: 0.8125rem;
   color: hsl(var(--muted-foreground));
+  text-align: left;
 }
 
 .project-category-badge {
@@ -185,10 +196,12 @@
   border-radius: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
+  text-align: left;
 }
 
 .project-funding {
   margin-bottom: 1rem;
+  text-align: left;
 }
 
 .funding-amounts {
@@ -197,6 +210,7 @@
   align-items: center;
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
+  text-align: left;
 }
 
 .amount-raised {
@@ -232,9 +246,179 @@
   border-radius: 0.5rem;
   cursor: pointer;
   transition: background 0.2s;
+  margin-top: auto;
 }
 
 .view-details-btn:hover {
+  background: #059669;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: hsl(var(--background));
+  border-radius: 0.75rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid hsl(var(--border));
+}
+
+.modal-header {
+  padding: 1.5rem 1.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin: 0;
+  text-align: left;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+}
+
+.close-button:hover {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-image-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-description {
+  font-size: 1rem;
+  color: hsl(var(--foreground));
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: hsl(var(--secondary));
+  border-radius: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.modal-donations {
+  margin-bottom: 1.5rem;
+}
+
+.donations-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.donation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid hsl(var(--border));
+  text-align: left;
+}
+
+.donation-amount {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.donation-time {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+.modal-funding {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.donate-button {
+  width: 100%;
+  background: #10b981;
+  color: white;
+  font-weight: 500;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+.donate-button:hover {
   background: #059669;
 }
 
@@ -244,6 +428,7 @@
     padding: 12px;
     overflow-x: hidden;
     width: 100%;
+    box-sizing: border-box;
   }
 
   .projects-title {
@@ -259,6 +444,7 @@
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 20px;
+    width: 100%;
   }
 
   .filter-left {
@@ -280,6 +466,7 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .status-badge {
@@ -292,10 +479,12 @@
   .projects-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    width: 100%;
   }
 
   .project-card {
     margin: 0;
+    width: 100%;
   }
 
   .project-image-container {
@@ -329,9 +518,60 @@
     font-size: 14px;
   }
 
+  /* Modal Mobile Styles */
+  .modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 4rem);
+    margin: 0;
+    max-width: none;
+  }
+
+  .modal-header {
+    padding: 1rem 1rem 0;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-image-container {
+    height: 200px;
+    margin-bottom: 1rem;
+  }
+
+  .modal-stats {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .stat-item {
+    padding: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .donations-title {
+    font-size: 1rem;
+  }
+
   /* Ensure no horizontal scroll */
-  .projects-page * {
-    box-sizing: border-box;
+  * {
+    max-width: 100%;
+  }
+  
+  body {
+    overflow-x: hidden;
   }
 }
 
@@ -347,5 +587,14 @@
   .status-badge {
     padding: 6px 10px;
     font-size: 12px;
+  }
+  
+  .modal-overlay {
+    padding: 0.25rem;
+    padding-top: 1rem;
+  }
+  
+  .modal-content {
+    max-height: calc(100vh - 2rem);
   }
 }

@@ -1,8 +1,22 @@
 import { useState } from "react";
-import { MapPin, CheckCircle, TrendingUp, Sparkles } from "lucide-react";
+import { MapPin, CheckCircle, TrendingUp, Sparkles, X } from "lucide-react";
 import "./Projects.css";
 
-const projects = [
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  image: string;
+  raised: number;
+  goal: number;
+  location: string;
+  verified: boolean;
+  trending?: boolean;
+  new?: boolean;
+}
+
+const projects: Project[] = [
   {
     id: 1,
     title: "Clean Water Nigeria",
@@ -77,6 +91,7 @@ const projects = [
 const ProjectsPage = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const filteredProjects = projects.filter((project) => {
     const matchesCategory = categoryFilter === "all" || project.category === categoryFilter;
@@ -90,6 +105,21 @@ const ProjectsPage = () => {
 
   const calculateProgress = (raised: number, goal: number) =>
     Math.round((raised / goal) * 100);
+
+  const openModal = (project: Project) => {
+    setSelectedProject(project);
+  };
+
+  const closeModal = () => {
+    setSelectedProject(null);
+  };
+
+  // Mock donation data for the modal
+  const recentDonations = [
+    { amount: 50000, time: "2 days ago" },
+    { amount: 25000, time: "5 days ago" },
+    { amount: 100000, time: "1 week ago" },
+  ];
 
   return (
     <div className="projects-page">
@@ -198,11 +228,103 @@ const ProjectsPage = () => {
                 </div>
               </div>
 
-              <button className="view-details-btn">View Details</button>
+              <button 
+                className="view-details-btn"
+                onClick={() => openModal(project)}
+              >
+                View Details
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      {selectedProject && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">{selectedProject.title}</h2>
+              <button className="close-button" onClick={closeModal}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="modal-image-container">
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="modal-image"
+                />
+                {selectedProject.verified && (
+                  <div className="verified-badge">
+                    <CheckCircle size={18} />
+                  </div>
+                )}
+              </div>
+
+              <p className="modal-description">{selectedProject.description}</p>
+
+              <div className="modal-stats">
+                <div className="stat-item">
+                  <span className="stat-value">
+                    ₦{selectedProject.raised.toLocaleString()}
+                  </span>
+                  <span className="stat-label">Raised</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-value">
+                    {calculateProgress(selectedProject.raised, selectedProject.goal)}%
+                  </span>
+                  <span className="stat-label">Funded</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-value">234</span>
+                  <span className="stat-label">Donors</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-value">1,250</span>
+                  <span className="stat-label">Beneficiaries</span>
+                </div>
+              </div>
+
+              <div className="modal-funding">
+                <div className="funding-amounts">
+                  <span className="amount-raised">
+                    ₦{selectedProject.raised.toLocaleString()}
+                  </span>
+                  <span className="amount-goal">
+                    of ₦{selectedProject.goal.toLocaleString()}
+                  </span>
+                </div>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${calculateProgress(selectedProject.raised, selectedProject.goal)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="modal-donations">
+                <h3 className="donations-title">Recent Donations</h3>
+                {recentDonations.map((donation, index) => (
+                  <div key={index} className="donation-item">
+                    <span className="donation-amount">
+                      ₦{donation.amount.toLocaleString()}
+                    </span>
+                    <span className="donation-time">{donation.time}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button className="donate-button">Donate Now</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
