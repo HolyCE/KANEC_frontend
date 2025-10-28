@@ -21,6 +21,7 @@ import ProjectsPage from './pages/dashboard/ProjectsPage';
 import Donations from './pages/dashboard/Donations';
 import AIInsights from './pages/dashboard/AIInsights';
 import Reports from './pages/dashboard/Reports';
+import Settings from './pages/dashboard/Settings';
 
 // Placeholder routes (optional)
 const Login = () => <h2 style={{ textAlign: 'center', marginTop: '100px' }}>Login Page</h2>;
@@ -88,6 +89,7 @@ const AppContent = () => {
           <Route path="donations" element={<Donations />} />
           <Route path="insights" element={<AIInsights />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </>
