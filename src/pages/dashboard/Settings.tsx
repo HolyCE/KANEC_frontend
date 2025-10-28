@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User, Wallet, Bell, Sun, Moon, LogOut } from 'lucide-react';
+import { useTheme } from './ThemeContext'; // Import the hook
 import './Settings.css';
 
 const Settings = () => {
@@ -10,7 +11,8 @@ const Settings = () => {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [donationAlerts, setDonationAlerts] = useState(true);
   const [monthlyReports, setMonthlyReports] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
+  const { theme, toggleTheme } = useTheme(); // Use theme context instead of local state
 
   const handleSaveChanges = () => {
     console.log('Saving changes...', { firstName, lastName, email, password });
@@ -197,14 +199,14 @@ const Settings = () => {
             <div className="theme-toggle">
               <button
                 className={`theme-button ${theme === 'light' ? 'active' : ''}`}
-                onClick={() => setTheme('light')}
+                onClick={toggleTheme}
               >
                 <Sun className="theme-icon" />
                 Light
               </button>
               <button
                 className={`theme-button ${theme === 'dark' ? 'active' : ''}`}
-                onClick={() => setTheme('dark')}
+                onClick={toggleTheme}
               >
                 <Moon className="theme-icon" />
                 Dark

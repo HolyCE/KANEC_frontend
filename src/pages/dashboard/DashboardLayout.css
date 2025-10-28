@@ -1,7 +1,7 @@
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: #f8fafc; /* Light gray background */
+  background: hsl(var(--background)); /* Use CSS variable */
 }
 
 /* Sidebar Styles */
@@ -18,6 +18,76 @@
   z-index: 100;
   transition: transform 0.3s ease;
   animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Theme Toggle Styles */
+.theme-toggle-sidebar {
+  margin-bottom: 12px;
+}
+
+.theme-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  color: hsl(var(--foreground));
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: hsl(var(--border));
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn.active {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.theme-toggle-header {
+  display: none;
+  background: none;
+  border: none;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-header:hover {
+  background: hsl(var(--muted));
+}
+
+/* Ensure charts remain visible */
+.dashboard-content canvas,
+.dashboard-content svg {
+  background: transparent !important;
+}
+
+/* Chart container visibility */
+.chart-container {
+  background: transparent !important;
+}
+
+/* Mobile responsive theme toggle */
+@media (max-width: 800px) {
+  .theme-toggle-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .theme-toggle-sidebar {
+    display: block;
+  }
 }
 
 @keyframes slideInLeft {
@@ -49,7 +119,7 @@
 .logo-icon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(135deg, hsl(142, 76%, 36%), hsl(142, 70%, 45%));
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -197,7 +267,7 @@
 .balance-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(135deg, hsl(142, 76%, 36%), hsl(142, 70%, 45%));
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -265,7 +335,7 @@
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(135deg, hsl(142, 76%, 36%), hsl(142, 70%, 45%));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -344,7 +414,7 @@
   margin-left: 240px;
   display: flex;
   flex-direction: column;
-  background: #f8fafc; /* Light gray background */
+  background: hsl(var(--background)); /* Use CSS variable */
   animation: mainContentSlide 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
 }
 
@@ -434,6 +504,8 @@
 
 .dashboard-search:focus {
   transform: scale(1.02);
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 .dashboard-search::placeholder {
@@ -475,6 +547,8 @@
 
 .network-btn:hover {
   transform: translateY(-2px);
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
 
 .wallet-address {
@@ -500,13 +574,18 @@
   cursor: pointer;
   padding: 4px;
   color: hsl(var(--foreground));
+  transition: all 0.2s ease;
+}
+
+.notification-badge:hover {
+  color: hsl(var(--accent));
 }
 
 .notification-badge .badge {
   position: absolute;
   top: -4px;
   right: -4px;
-  background: #ef4444;
+  background: hsl(0, 84%, 60%);
   color: white;
   font-size: 10px;
   font-weight: 600;
@@ -517,7 +596,7 @@
 .user-avatar-small {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: linear-gradient(135deg, hsl(142, 76%, 36%), hsl(142, 70%, 45%));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -527,6 +606,11 @@
   font-weight: 600;
   font-size: 11px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-avatar-small:hover {
+  transform: scale(1.05);
 }
 
 .dashboard-content {
@@ -534,8 +618,8 @@
   padding: 24px;
   overflow-y: auto;
   animation: contentReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
-  color: black;
-  background-color: white;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
 }
 
 @keyframes contentReveal {
@@ -643,4 +727,31 @@
   * {
     box-sizing: border-box;
   }
+}
+
+/* Additional dark mode enhancements */
+[data-theme="dark"] .dashboard-content {
+  background: hsl(var(--background));
+}
+
+[data-theme="dark"] .dashboard-main {
+  background: hsl(var(--background));
+}
+
+[data-theme="dark"] .dashboard-container {
+  background: hsl(var(--background));
+}
+
+/* Smooth transitions for theme switching */
+.dashboard-container,
+.dashboard-main,
+.dashboard-content,
+.dashboard-sidebar,
+.dashboard-header,
+.nav-item,
+.user-balance,
+.network-btn,
+.wallet-address,
+.dashboard-search {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
