@@ -1,6 +1,13 @@
 import "./Footer.css";
+import { useState } from 'react';
 
 const Footer = () => {
+  const [activeColumn, setActiveColumn] = useState(null);
+
+  const toggleColumn = (index) => {
+    setActiveColumn(activeColumn === index ? null : index);
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -12,44 +19,59 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="footer-column">
-            <h4>Platform</h4>
-            <ul className="footer-links">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">How It Works</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Contact</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-column">
-            <h4>Projects</h4>
-            <ul className="footer-links">
-              <li><a href="#">Browse Projects</a></li>
-              <li><a href="#">Start a Project</a></li>
-              <li><a href="#">Success Stories</a></li>
-              <li><a href="#">Partners</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-column">
-            <h4>Resources</h4>
-            <ul className="footer-links">
-              <li><a href="#">Documentation</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Newsletter</a></li>
-              <li><a href="#">Transparency</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-column">
-            <h4>Legal</h4>
-            <ul className="footer-links">
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Compliance</a></li>
-            </ul>
-          </div>
+          {[
+            {
+              title: "Platform",
+              links: [
+                { text: "About Us", href: "#" },
+                { text: "How It Works", href: "#" },
+                { text: "FAQ", href: "#" },
+                { text: "Contact", href: "#" }
+              ]
+            },
+            {
+              title: "Projects",
+              links: [
+                { text: "Browse Projects", href: "#" },
+                { text: "Start a Project", href: "#" },
+                { text: "Success Stories", href: "#" },
+                { text: "Partners", href: "#" }
+              ]
+            },
+            {
+              title: "Resources",
+              links: [
+                { text: "Documentation", href: "#" },
+                { text: "Blog", href: "#" },
+                { text: "Newsletter", href: "#" },
+                { text: "Transparency", href: "#" }
+              ]
+            },
+            {
+              title: "Legal",
+              links: [
+                { text: "Privacy Policy", href: "#" },
+                { text: "Terms of Service", href: "#" },
+                { text: "Compliance", href: "#" }
+              ]
+            }
+          ].map((column, index) => (
+            <div 
+              key={index} 
+              className={`footer-column ${activeColumn === index ? 'active' : ''}`}
+            >
+              <h4 onClick={() => toggleColumn(index)}>
+                {column.title}
+              </h4>
+              <ul className="footer-links">
+                {column.links.map((link, linkIndex) => (
+                  <li key={linkIndex}>
+                    <a href={link.href}>{link.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <div className="footer-bottom">
