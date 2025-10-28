@@ -1,0 +1,85 @@
+.count-up-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 80px 20px;
+  background-color: #ffffff;
+  flex-wrap: wrap;
+  gap: 40px;
+  /* max-width: 1600px; */
+  margin: 0 auto;
+}
+
+.count-box {
+  text-align: center;
+  padding: 30px 20px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.count-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #14cd27;
+  display: block;
+  margin-bottom: 15px;
+  font-family: 'Arial', sans-serif;
+  line-height: 1;
+}
+
+.count-label {
+  font-size: 1rem;
+  color: black;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .count-up-container {
+    padding: 60px 20px;
+    gap: 30px;
+  }
+  
+  .count-number {
+    font-size: 3.5rem;
+  }
+  
+  .count-label {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .count-up-container {
+    flex-direction: column;
+    gap: 50px;
+    padding: 50px 20px;
+  }
+  
+  .count-box {
+    min-width: 200px;
+  }
+  
+  .count-number {
+    font-size: 3rem;
+  }
+  
+  .count-label {
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .count-number {
+    font-size: 2.5rem;
+  }
+  
+  .count-label {
+    font-size: 0.9rem;
+  }
+}

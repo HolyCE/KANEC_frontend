@@ -1,0 +1,338 @@
+.page-containers {
+  min-height: 70vh;
+  padding: 90px;
+  background-color: whitesmoke;
+  font-family: Arial, sans-serif;
+  position: relative;
+}
+
+.header-contents {
+  text-align: left;
+  margin-bottom: 20px;
+  margin-left: 60px;
+}
+
+.main-titles {
+  font-size: 3rem;
+  font-weight: 700;
+  color: black;
+  margin: 0;
+}
+
+.verified-texts {
+  color: #14cd27; /* Green color for "Verified" */
+}
+
+.subtexts {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.main-boards {
+  display: flex;
+  margin-top:55px;
+  margin-left: 45%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+}
+
+.text-sections {
+  padding: 20px 30px;
+  flex: 1;
+}
+
+.project-titles {
+  color: black;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.project-descriptions {
+  color: black;
+  font-size: 0.9em;
+  line-height: 1.5;
+  margin-bottom: 35px;
+}
+
+.tag-groups {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tag1 {
+  background: #E6F9ED;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  color: #0D7450;
+}
+
+.tag2 {
+  background: #EAF3FF;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  color: #2A5C99;
+}
+
+.tag3 {
+  background: #FFF0F5;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  color: #B81D45;
+}
+
+.Bold-texts {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: black;
+}
+
+.image-sections {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.project-images {
+  max-width: 100%;
+  height: 100%;
+  border-radius: 0 40px 40px 0;
+}
+
+.inner-boards {
+  position: absolute;
+  bottom: -33px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 90%;
+  max-width: 600px;
+  background: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px 5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.funding-infos {
+  color: black;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.stat-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;;
+}
+
+.stat-keys {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-family: 'Arial', sans-serif;
+}
+
+.stat-values {
+  font-size: 15px;
+  color: black;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.2;
+}
+
+/* Responsive Design */
+/* Large Desktops and High-Resolution Screens */
+@media (max-width: 1440px) {
+  .header-contents {
+    margin-left: 50px;
+  }
+  .main-boards {
+    width: 85%;
+    margin-left: 50%;
+  }
+}
+
+/* Standard Laptops and Desktops */
+@media (max-width: 1200px) {
+  .header-contents {
+    margin-left: 40px;
+  }
+  .main-boards {
+    width: 90%;
+    max-width: 800px;
+  }
+  
+  .main-titles {
+    font-size: 2.5rem;
+  }
+  
+  .subtexts {
+    font-size: 1.1rem;
+  }
+}
+
+/* Small Laptops */
+@media (max-width: 1024px) {
+  .page-containers {
+    padding: 25px;
+  }
+  
+  .header-contents {
+    margin-left: 30px;
+  }
+  
+  .main-boards {
+    width: 92%;
+    margin-left: 48%;
+  }
+  
+  .main-titles {
+    font-size: 2.2rem;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .page-containers {
+    padding: 20px;
+    min-height: 60vh;
+  }
+  
+  .header-contents {
+    margin-left: 0;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .main-titles {
+    font-size: 2rem;
+  }
+  
+  .subtexts {
+    font-size: 1rem;
+  }
+  
+  .main-boards {
+    flex-direction: column;
+    width: 95%;
+    margin: 40px auto 0 auto;
+    margin-left: auto;
+    transform: none;
+  }
+}
+
+/* Large Mobile Phones */
+@media (max-width: 480px) {
+  .page-containers {
+    padding: 15px;
+  }
+  
+  .header-contents {
+    margin-bottom: 25px;
+  }
+  
+  .main-titles {
+    font-size: 1.8rem;
+  }
+  
+  .subtexts {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .main-boards {
+    width: 100%;
+    border-radius: 20px;
+    margin-top: 30px;
+  }
+}
+
+/* Small Mobile Phones */
+@media (max-width: 360px) {
+  .page-containers {
+    padding: 10px;
+  }
+  
+  .header-contents {
+    margin-bottom: 20px;
+  }
+  
+  .main-titles {
+    font-size: 1.6rem;
+  }
+  
+  .subtexts {
+    font-size: 0.85rem;
+  }
+}
+
+/* Very Small Screens (Galaxy Fold, etc) */
+@media (max-width: 320px) {
+  .header-contents {
+    margin-bottom: 15px;
+  }
+  
+  .main-titles {
+    font-size: 1.4rem;
+  }
+  
+  .subtexts {
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mobile - Header specific */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page-containers {
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .header-contents {
+    margin-bottom: 15px;
+  }
+  
+  .main-titles {
+    font-size: 1.8rem;
+  }
+  
+  .subtexts {
+    font-size: 0.9rem;
+  }
+  
+  .main-boards {
+    margin-top: 20px;
+  }
+}
+
+/* Tall screens (18:9, 19:9 phones) */
+@media (min-height: 800px) and (max-width: 480px) {
+  .header-contents {
+    margin-bottom: 40px;
+  }
+  
+  .main-titles {
+    font-size: 2rem;
+  }
+}

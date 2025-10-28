@@ -1,9 +1,12 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 
 function Header() {
+  const navigate = useNavigate();
+
   const handleLogin = () => {
-    alert('Redirecting to Login Page...');
+    navigate('/signin'); // redirects to Sign In page
   };
 
   return (
@@ -15,9 +18,9 @@ function Header() {
       <nav className="nav">
         {/* Center group */}
         <div className="center-links">
-          <a href="#home">Home</a>
-          <a href="#project">Projects</a>
-          <a href="#transparency">Transparency</a>
+          <Link to="/">Home</Link>
+          <Link to="/projects">Projects</Link>
+          <Link to="/donations">Donations</Link>
         </div>
 
         {/* Right group */}
@@ -25,7 +28,7 @@ function Header() {
           <button className="login-button" onClick={handleLogin}>
             Log in
           </button>
-          <a href="#contact" className='contact-link'>Contact</a>
+          <Link to="/contact" className="contact-link">Contact</Link>
         </div>
       </nav>
     </header>

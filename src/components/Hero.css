@@ -1,22 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* ==== MAIN LAYOUT ==== */
-.hero {
+.heros {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 4rem 6rem;
   font-family: "Inter", sans-serif;
   background: #fff;
   color: #1a202c;
-  min-height: 100vh;
-  gap: 3rem;
+  min-height: 50vh;
+  gap: 8rem;
   margin: 0px;
 }
 
+.transparency-badges{
+  background-color: #F0FDF4; /* emerald-50 */
+  color: #10B981;            /* emerald-500 */
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
 /* ====== LEFT CONTENT (untouched styling from you) ====== */
-.hero-content {
-  max-width: 50%;
+.hero-contents {
+  max-width: 100%;
 }
 
 .hero-buttons {
@@ -25,24 +36,24 @@
   gap: 1.5rem;
 }
 
-.donate-btn {
-  background-color: #111827;
+.donate-btns {
+  background-color: #111827 !important;
   color: #fff;
   border: none;
-  border-radius: 2rem;
-  padding: 0.85rem 1.9rem;
+  border-radius: 2rem !important;
+  padding: 0.85rem 1.9rem !important;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
 }
 
-.donate-btn:hover {
+.donate-btns:hover {
   background-color: #000;
   transform: translateY(-2px);
 }
 
-.join-btn {
+.join-btns {
   background-color: #fff;
   color: #111827;
   border: 1.8px solid #111827;
@@ -54,62 +65,69 @@
   transition: 0.3s;
 }
 
-.join-btn:hover {
+.join-btns:hover {
   background-color: #f9fafb;
 }
 
-.highlight {
+.highlights {
     color: #14cd27;
 }
 
 /* ====== RIGHT VISUAL SECTION ====== */
-.hero-visual {
+.hero-visuals {
   position: relative;
   width: 440px;
   flex-shrink: 0;
+  padding-top: 50px;
+  margin-left: 50px;
 }
 
 /* --- MAIN CARD --- */
-.project-card {
+.project-cards {
   background: #fff;
   border-radius: 1.2rem;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 2;
   transition: transform 0.3s ease;
+  right: 5px;
+  bottom: 30px;
 }
 
-.project-card:hover {
-  transform: translateY(-4px);
-}
-
-.project-card img {
-  width: 100%;
-  height: 260px;
+.project-cards img {
+  width: 434px;
+  height: 400px;
   object-fit: cover;
+  border-radius: 1.2rem;
+
 }
 
 /* --- INFO INSIDE CARD --- */
-.project-info {
-  padding: 1.3rem 1.6rem;
+.project-infos {
+  width: 320px;
+  height: 130px;
+  background: #fff;
+  padding: 0.5rem 1.6rem;
+  position: absolute;
+  bottom: 20px !important; 
+  left: 30px !important;
+  border-radius: 20px;
+  /* right: 0; */
 }
 
-.header-row {
+.header-rows {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.8rem;
 }
 
-.header-row h3 {
+.header-rows h3 {
   font-size: 1rem;
   font-weight: 600;
   color: #000;
   margin: 0;
 }
 
-.status {
+.statuss {
   background: #e8f9ee;
   color: #2ecc71;
   font-size: 0.75rem;
@@ -118,7 +136,7 @@
   font-weight: 500;
 }
 
-.details {
+.detailss {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -127,16 +145,17 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   padding: 1rem 1.2rem;
   margin-top: 0.8rem;
+  
 }
 
-.details p {
+.detailss p {
   font-size: 0.85rem;
   color: #555;
   margin: 0;
   line-height: 1.4;
 }
 
-.details strong {
+.detailss strong {
   display: block;
   font-size: 1.4rem;
   font-weight: 700;
@@ -144,8 +163,8 @@
 }
 
 /* --- FLOATING TAGS --- */
-.verified-tag,
-.tracking-tag {
+.verified-tags,
+.tracking-tags {
   position: absolute;
   background: #fff;
   border-radius: 1rem;
@@ -153,7 +172,7 @@
   font-size: 0.8rem;
   font-weight: 500;
   color: #000;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
   border: 1px solid #f1f1f1;
   display: flex;
   align-items: center;
@@ -161,19 +180,19 @@
   z-index: 3;
 }
 
-.verified-tag {
-  top: -35px;
-  left: -35px;
+.verified-tags {
+  top: -2px;
+  left: -140px;
 }
 
-.tracking-tag {
-  bottom: -35px;
-  right: -35px;
+.tracking-tags {
+  top: 435px;
+  right: 10px;
 }
 
 /* Add small green box effect */
-.verified-tag::before,
-.tracking-tag::before {
+.verified-tags::before,
+.tracking-tags::before {
   content: "";
   display: inline-block;
   width: 18px;
@@ -211,20 +230,20 @@
 }
 
 @media (max-width: 600px) {
-  .project-card img {
+  .project-cards img {
     height: 220px;
   }
 
-  .details strong {
+  .detailss strong {
     font-size: 1.1rem;
   }
 
-  .details p {
+  .detailss p {
     font-size: 0.8rem;
   }
 
-  .verified-tag,
-  .tracking-tag {
+  .verified-tags,
+  .tracking-tags {
     font-size: 0.75rem;
     padding: 0.6rem 0.8rem;
   }

@@ -1,0 +1,23 @@
+.trusted-container {
+  text-align: center;
+  padding: 20px;
+  background-color: white;
+}
+
+.trusted-title {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+}
+
+.org-list {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.org-item {
+  color: #333;
+  font-size: 1em;
+  padding: 5px 10px;
+}
