@@ -18,10 +18,13 @@ import SignInPage from './pages/SignInPage';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 import DashboardProjects from './pages/dashboard/ProjectsPage';
-import Donations from './pages/dashboard/Donations'; // Import the Donations component
+import Donations from './pages/dashboard/Donations';
 import AIInsights from './pages/dashboard/AIInsights';
 import Reports from './pages/dashboard/Reports';
 import Settings from './pages/dashboard/Settings';
+
+// Theme Context
+import { ThemeProvider } from './pages/dashboard/ThemeContext'; // Import the ThemeProvider
 
 // Placeholder components
 const Login = () => <h2 style={{ textAlign: 'center', marginTop: '100px' }}>Login Page</h2>;
@@ -107,9 +110,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ThemeProvider> {/* Wrap entire app with ThemeProvider */}
+      <Router>
+        <AppContent />
+      </Router>
+    </ThemeProvider>
   );
 };
 

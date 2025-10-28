@@ -14,13 +14,17 @@ import {
   Globe,
   Leaf,
   Search,
-  Bell
+  Bell,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from './ThemeContext'; // Import the hook
 import './DashboardLayout.css';
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme(); // Use the theme context
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -32,10 +36,7 @@ const DashboardLayout = () => {
   ];
 
   const handleLogout = () => {
-    // You can add any logout logic here (clear tokens, etc.)
     console.log('Logging out...');
-    
-    // Redirect to SignInPage
     navigate('/signin');
   };
 
@@ -74,6 +75,17 @@ const DashboardLayout = () => {
         </nav>
 
         <div className="sidebar-footer">
+          {/* Theme Toggle in Sidebar */}
+          <div className="theme-toggle-sidebar">
+            <button 
+              className={`theme-toggle-btn ${theme === 'light' ? 'active' : ''}`}
+              onClick={toggleTheme}
+            >
+              {theme === 'light' ? <Sun size={16} /> : <Moon size={16} />}
+              <span>{theme === 'light' ? 'Light' : 'Dark'} Mode</span>
+            </button>
+          </div>
+
           <div className="user-balance">
             <div className="balance-icon">
               <Wallet size={20} />
@@ -116,6 +128,14 @@ const DashboardLayout = () => {
           </div>
 
           <div className="header-actions">
+            {/* Theme Toggle in Header for mobile */}
+            <button 
+              className="theme-toggle-header"
+              onClick={toggleTheme}
+            >
+              {theme === 'light' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            
             <button className="network-btn">
               <Globe size={16} />
               <span>Hedera Mainnet</span>
