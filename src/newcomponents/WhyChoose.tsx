@@ -37,33 +37,33 @@ const WhyChoose = () => {
   ];
 
   return (
-    <section className="why-choose" ref={ref}>
-      <div className="why-choose-container">
-        <div className="why-choose-header">
-          <p className="section-badge">Blockchain Transparency</p>
-          <h2 className="section-title">
-            Why choose <span className="highlight">KANEC</span>
+    <section className="features-section" ref={ref}>
+      <div className="features-container">
+        <div className="features-header">
+          <p className="features-badge">Blockchain Transparency</p>
+          <h2 className="features-title">
+            Why choose <span className="features-highlight">KANEC</span>
           </h2>
-          <p className="section-description">
+          <p className="features-description">
             Built on Hedera's blockchain, every transaction is transparent, verified, and immutable. Trust through technology.
           </p>
         </div>
 
-        <div className="benefits-grid">
+        <div className="features-grid">
           {benefits.map((benefit, index) => (
             <motion.div
               key={index}
-              className="benefit-card"
+              className="feature-card"
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              <div className="benefit-number">{benefit.number}</div>
-              <div className="benefit-icon">
+              <div className="feature-number">{benefit.number}</div>
+              <div className="feature-icon">
                 <benefit.icon size={28} />
               </div>
-              <h3 className="benefit-title">{benefit.title}</h3>
-              <p className="benefit-description">{benefit.description}</p>
+              <h3 className="feature-title">{benefit.title}</h3>
+              <p className="feature-description">{benefit.description}</p>
             </motion.div>
           ))}
         </div>

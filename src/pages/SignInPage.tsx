@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Leaf, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import './SignInPage.css';
 
@@ -39,7 +39,11 @@ const SignInPage = () => {
 
         <div className="auth-card">
           <div className="auth-logo">
-            <Leaf size={32} className="auth-leaf-icon" />
+            <img 
+              src="/reallogo.png" 
+              alt="KANEC IMPACT LEDGER" 
+              className="logo-image"
+            />
           </div>
 
           <h1 className="auth-title">Welcome to Kanec</h1>

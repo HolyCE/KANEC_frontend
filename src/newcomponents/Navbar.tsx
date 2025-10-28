@@ -15,7 +15,11 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-brand">
           <Link to="/" className="logo" onClick={closeMobileMenu}>
-            <div className="logo-icon">K</div>
+            <img 
+              src="/reallogo.png" 
+              alt="KANEC IMPACT LEDGER" 
+              className="logo-image"
+            />
             <div className="logo-text">
               <span className="logo-main">KANEC</span>
               <span className="logo-sub">IMPACT LEDGER</span>

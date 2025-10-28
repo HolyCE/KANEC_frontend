@@ -53,8 +53,11 @@
   margin-bottom: 0.8rem;
 }
 
-.auth-leaf-icon {
-  color: #10b981;
+.logo-image {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
 }
 
 .auth-title {
@@ -136,7 +139,6 @@
   color: black;
   background-color: white;
 }
-
 
 .form-group input:focus,
 .form-group select:focus {

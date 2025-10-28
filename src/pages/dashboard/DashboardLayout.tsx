@@ -12,7 +12,6 @@ import {
   X,
   Wallet,
   Globe,
-  Leaf,
   Search,
   Bell,
   Sun,
@@ -46,9 +45,11 @@ const DashboardLayout = () => {
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="logo-section">
-            <div className="logo-icon">
-              <Leaf size={18} className="logo-leaf" />
-            </div>
+            <img 
+              src="/reallogo.png" 
+              alt="KANEC IMPACT LEDGER" 
+              className="logo-image"
+            />
             <div className="logo-text">
               <div className="logo-title">KANEC</div>
               <div className="logo-subtitle">IMPACT LEDGER</div>
