@@ -74,4 +74,8 @@
   .nav .right-links {
     margin-right: 0;
   }
+
+  .dashboard-button {
+    margin: 0.5rem 0;
+  }
 }
