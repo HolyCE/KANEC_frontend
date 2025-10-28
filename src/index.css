@@ -51,12 +51,7 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    color-scheme: light dark;
     font-family: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -98,18 +93,33 @@
 @layer base {
   * {
     border-color: hsl(var(--border));
+    box-sizing: border-box;
+  }
+
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
 
   body {
     margin: 0;
     padding: 0;
-    display: grid;
     min-width: 320px;
     min-height: 100vh;
     font-family: 'Poppins', Arial, sans-serif;
     overflow-x: hidden;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    width: 100%;
+    position: relative;
+  }
+
+  /* Prevent horizontal scroll */
+  #root, .app-container, .main-container {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
 }
 
@@ -155,7 +165,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Autofill styling fix (goes in main.css) */
+/* Autofill styling fix */
 input:-webkit-autofill {
   background-color: white !important;
   color: #000 !important;
@@ -168,7 +178,6 @@ input:-webkit-autofill:focus {
   background-color: white !important;
   box-shadow: 0 0 0 1000px #f9f9f9 inset !important;
 }
-
 
 /* 🌤 Light mode preferences */
 @media (prefers-color-scheme: light) {
@@ -190,4 +199,68 @@ input:-webkit-autofill:focus {
   background-color: white !important;
   border-radius: 5px;
   margin: 30px 0;
+}
+
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Ensure all containers don't exceed viewport */
+  .container, .navbar-container, .hero-container, .section-container {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  
+  /* Prevent horizontal overflow */
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Fix for flex/grid items causing overflow */
+  .grid, .flex {
+    max-width: 100%;
+  }
+  
+  /* Ensure text doesn't cause overflow */
+  p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Fix for long words/URLs */
+  .break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  .container, .navbar-container, .hero-container, .section-container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+}
+
+/* Utility class to prevent horizontal scroll */
+.no-horizontal-scroll {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure all sections are contained */
+section, div, main, header, footer {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
