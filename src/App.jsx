@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 
 // Components
 import Header from './components/Header';
-import Footer from './components/Footer';
+import Footer from './Footer';
 import Hero from './components/Hero';
 import CountUp from './components/CountUp';
 import Organization from './components/Organization';
@@ -13,44 +13,53 @@ import JoinMovement from './components/JoinMovement';
 import OurVision from './components/OurVision';
 
 // Pages
-import Projects from './pages/Projects';
+import ProjectsPage from './pages/Projects';
 import SignInPage from './pages/SignInPage';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
-import ProjectsPage from './pages/dashboard/ProjectsPage';
-import Donations from './pages/dashboard/Donations';
+import DashboardProjects from './pages/dashboard/ProjectsPage';
+import Donations from './pages/dashboard/Donations'; // Import the Donations component
 import AIInsights from './pages/dashboard/AIInsights';
 import Reports from './pages/dashboard/Reports';
 import Settings from './pages/dashboard/Settings';
 
-// Placeholder routes (optional)
+// Placeholder components
 const Login = () => <h2 style={{ textAlign: 'center', marginTop: '100px' }}>Login Page</h2>;
+
+// Wrapper component to add space for fixed navbar
+const PageWrapper = ({ children }) => {
+  return (
+    <div style={{ paddingTop: '80px' }}> {/* Adjust this value based on your navbar height */}
+      {children}
+    </div>
+  );
+};
 
 const AppContent = () => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isSignInRoute = location.pathname === '/signin' || location.pathname === '/login';
 
-  // Show Header and Footer on all pages except SignIn/Login and Dashboard
+  // Show Navbar and Footer on all pages except SignIn/Login and Dashboard
   const showLayout = !isDashboardRoute && !isSignInRoute;
 
   return (
     <>
-      {showLayout && <Header />}
+      {showLayout && <Navbar />}
 
       <Routes>
-        {/* ✅ Full Landing Page */}
+        {/* ✅ New Landing Page Structure */}
         <Route
           path="/"
           element={
             <>
               <Hero />
-              <CountUp />
-              <Organization />
-              <CommunityProject />
-              <BlockchainTransparency />
-              <JoinMovement />
-              <OurVision />
+              <Stats />
+              <Partners />
+              <WhyChoose />
+              <BlockchainSection />
+              <CTASection />
+              <Vision />
               <Footer />
             </>
           }
@@ -60,21 +69,21 @@ const AppContent = () => {
         <Route
           path="/projects"
           element={
-            <>
-              <Projects />
+            <PageWrapper>
+              <ProjectsPage />
               <Footer />
-            </>
+            </PageWrapper>
           }
         />
 
-        {/* Donations Page */}
+        {/* Donors Page - Now using the Donations component */}
         <Route
-          path="/donations"
+          path="/donors"
           element={
-            <>
+            <PageWrapper>
               <Donations />
               <Footer />
-            </>
+            </PageWrapper>
           }
         />
 
@@ -82,10 +91,10 @@ const AppContent = () => {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Dashboard Routes (no header/footer) */}
+        {/* Dashboard Routes (no navbar/footer) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="projects" element={<DashboardProjects />} />
           <Route path="donations" element={<Donations />} />
           <Route path="insights" element={<AIInsights />} />
           <Route path="reports" element={<Reports />} />
