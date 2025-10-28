@@ -2,15 +2,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // Components
-import Header from './components/Header';
-import Footer from './Footer';
-import Hero from './components/Hero';
-import CountUp from './components/CountUp';
-import Organization from './components/Organization';
-import CommunityProject from './components/CommunityProject';
-import BlockchainTransparency from './components/BlockchainTransparency';
-import JoinMovement from './components/JoinMovement';
-import OurVision from './components/OurVision';
+import Navbar from './newcomponents/Navbar';
+import Hero from './newcomponents/Hero';
+import Stats from './newcomponents/Stats';
+import Partners from './newcomponents/Partners';
+import WhyChoose from './newcomponents/WhyChoose';
+import BlockchainSection from './newcomponents/BlockchainSection';
+import CTASection from './newcomponents/CTASection';
+import Vision from './newcomponents/Vision';
+import Footer from './newcomponents/Footer';
 
 // Pages
 import ProjectsPage from './pages/Projects';
