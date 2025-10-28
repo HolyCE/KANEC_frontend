@@ -270,6 +270,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 12px;
   color: white;
   font-weight: 600;
   font-size: 13px;
@@ -521,6 +522,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -5px;
   color: white;
   font-weight: 600;
   font-size: 11px;
@@ -532,6 +534,8 @@
   padding: 24px;
   overflow-y: auto;
   animation: contentReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+  color: black;
+  background-color: white;
 }
 
 @keyframes contentReveal {

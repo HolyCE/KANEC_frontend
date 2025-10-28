@@ -127,13 +127,20 @@
   font-size: 0.78rem;
   transition: all 0.2s;
   background: #fff;
+  color: black;
   appearance: none;
   box-sizing: border-box;
 }
 
+.form-group .email-input {
+  color: black;
+  background-color: white;
+}
+
+
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #3b82f6;
+  border-color: #0d0d0d;
   outline: none;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }

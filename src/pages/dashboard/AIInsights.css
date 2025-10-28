@@ -1,5 +1,6 @@
 .ai-insights-page {
   padding: 2rem;
+  background: hsl(var(--background));
   min-height: 100vh;
 }
 

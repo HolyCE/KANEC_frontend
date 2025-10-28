@@ -1,0 +1,18 @@
+.our-vision {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  color: #2c3e50;
+}
+
+.our-vision h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.our-vision p {
+  font-size: 1.1em;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #34495e;
+}

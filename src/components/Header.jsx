@@ -6,7 +6,7 @@ function Header() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/signin');
+    navigate('/signin'); // redirects to Sign In page
   };
 
   return (
@@ -20,7 +20,7 @@ function Header() {
         <div className="center-links">
           <Link to="/">Home</Link>
           <Link to="/projects">Projects</Link>
-          <Link to="/transparency">Transparency</Link>
+          <Link to="/donations">Donations</Link>
         </div>
 
         {/* Right group */}
