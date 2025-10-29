@@ -118,6 +118,10 @@
 /* ✳️ Global Element Styling */
 @layer base {
   * {
+    box-sizing: border-box; /* Prevent padding/border from adding to width */
+  }
+
+  *:not(svg, svg *) {
     border-color: hsl(var(--border));
   }
 
@@ -130,6 +134,8 @@
     overflow-x: hidden; /* Disable horizontal scroll */
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -225,6 +231,7 @@ input:-webkit-autofill:focus {
     padding-right: 1rem !important;
     margin-left: auto !important;
     margin-right: auto !important;
+    overflow-x: hidden;
   }
   
   /* Prevent horizontal overflow */
@@ -236,17 +243,12 @@ input:-webkit-autofill:focus {
   /* Fix for flex/grid items causing overflow */
   .grid, .flex {
     max-width: 100%;
+    overflow-x: hidden;
   }
   
   /* Ensure text doesn't cause overflow */
   p, h1, h2, h3, h4, h5, h6, span, div {
     word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-  
-  /* Fix for long words/URLs */
-  .break-words {
-    word-break: break-word;
     overflow-wrap: break-word;
   }
 }
@@ -273,4 +275,28 @@ input:-webkit-autofill:focus {
 section, div, main, header, footer {
   max-width: 100vw;
   overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Fix for SVG icons specifically */
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Remove extra space below SVG */
+}
+
+/* Additional fixes to prevent horizontal scroll */
+body {
+  position: relative;
+  width: 100%;
+}
+
+main {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Remove any potential horizontal padding/margin issues */
+* {
+  max-width: 100vw;
 }
