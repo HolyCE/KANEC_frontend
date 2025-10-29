@@ -21,6 +21,7 @@ const SignInPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
