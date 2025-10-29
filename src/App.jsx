@@ -24,7 +24,7 @@ import Reports from './pages/dashboard/Reports';
 import Settings from './pages/dashboard/Settings';
 
 // Theme Context
-import { ThemeProvider } from './pages/dashboard/ThemeContext'; // Import the ThemeProvider
+import { ThemeProvider } from './pages/dashboard/ThemeContext';
 
 // Placeholder components
 const Login = () => <h2 style={{ textAlign: 'center', marginTop: '100px' }}>Login Page</h2>;
@@ -94,8 +94,15 @@ const AppContent = () => {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Dashboard Routes (no navbar/footer) */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        {/* Dashboard Routes (no navbar/footer) - ThemeProvider wraps only dashboard routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ThemeProvider>
+              <DashboardLayout />
+            </ThemeProvider>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="projects" element={<DashboardProjects />} />
           <Route path="donations" element={<Donations />} />
@@ -110,11 +117,9 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <ThemeProvider> {/* Wrap entire app with ThemeProvider */}
-      <Router>
-        <AppContent />
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <AppContent />
+    </Router>
   );
 };
 

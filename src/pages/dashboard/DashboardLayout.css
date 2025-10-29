@@ -116,14 +116,11 @@
   gap: 10px;
 }
 
-.logo-icon {
+.logo-image {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, hsl(142, 76%, 36%), hsl(142, 70%, 45%));
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
   animation: rotateIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
 }
 
@@ -136,10 +133,6 @@
     opacity: 1;
     transform: rotate(0) scale(1);
   }
-}
-
-.logo-leaf {
-  color: white;
 }
 
 .logo-text {
