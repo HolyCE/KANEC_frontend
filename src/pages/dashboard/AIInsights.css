@@ -1,3 +1,4 @@
+/* AIInsights.css */
 .ai-insights-page {
   padding: 2rem;
   background: hsl(var(--background));
@@ -40,6 +41,11 @@
 
 .regenerate-button:hover {
   background: hsl(var(--secondary));
+}
+
+.regenerate-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .spin {
@@ -144,11 +150,6 @@
   gap: 1.5rem;
 }
 
-.pie-chart {
-  width: 200px;
-  height: 200px;
-}
-
 .chart-legend {
   display: flex;
   flex-wrap: wrap;
@@ -170,68 +171,9 @@
   border-radius: 2px;
 }
 
-.legend-color.education {
-  background: #10b981;
-}
-
-.legend-color.healthcare {
-  background: #fbbf24;
-}
-
-.legend-color.climate {
-  background: #22c55e;
-}
-
-.legend-color.women {
-  background: #1f2937;
-}
-
 .bar-chart-container {
   position: relative;
-  display: flex;
-  gap: 1rem;
   height: 250px;
-}
-
-.y-axis-labels {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-  padding-right: 0.5rem;
-}
-
-.bar-chart {
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  gap: 0.5rem;
-  padding-bottom: 1.5rem;
-}
-
-.bar {
-  flex: 1;
-  background: #10b981;
-  border-radius: 0.375rem 0.375rem 0 0;
-  position: relative;
-  transition: all 0.3s;
-  min-height: 40px;
-}
-
-.bar:hover {
-  background: #059669;
-}
-
-.bar-label {
-  position: absolute;
-  bottom: -1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-  white-space: nowrap;
 }
 
 .recommendations-section {
@@ -429,11 +371,6 @@
     gap: 16px;
   }
 
-  .pie-chart {
-    width: 180px;
-    height: 180px;
-  }
-
   .chart-legend {
     gap: 12px;
   }
@@ -444,16 +381,6 @@
 
   .bar-chart-container {
     height: 200px;
-    gap: 12px;
-  }
-
-  .bar {
-    min-height: 30px;
-  }
-
-  .bar-label {
-    font-size: 11px;
-    bottom: -20px;
   }
 
   .recommendations-section {
@@ -505,22 +432,8 @@
 }
 
 @media (max-width: 480px) {
-  .pie-chart {
-    width: 160px;
-    height: 160px;
-  }
-  
   .bar-chart-container {
     height: 180px;
-  }
-  
-  .y-axis-labels {
-    font-size: 10px;
-  }
-  
-  .bar-label {
-    font-size: 10px;
-    bottom: -18px;
   }
   
   .recommendation-card {

@@ -1,6 +1,19 @@
 import { useState } from "react";
 import { RefreshCw, Heart, TrendingUp, Sparkles, BarChart3, PieChart, Target, CircleDot } from "lucide-react";
 import { toast } from "sonner";
+import {
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from "recharts";
 import "./AIInsights.css";
 
 interface Recommendation {
@@ -43,6 +56,23 @@ const recommendations: Recommendation[] = [
   },
 ];
 
+// Data for Recharts
+const categoryData = [
+  { name: "Education", value: 45, color: "#10b981" },
+  { name: "Healthcare", value: 25, color: "#fbbf24" },
+  { name: "Climate", value: 20, color: "#22c55e" },
+  { name: "Women Empowerment", value: 10, color: "#1f2937" },
+];
+
+const monthlyData = [
+  { month: "Aug", amount: 45000 },
+  { month: "Sep", amount: 55000 },
+  { month: "Oct", amount: 50000 },
+  { month: "Nov", amount: 70000 },
+  { month: "Dec", amount: 80000 },
+  { month: "Jan", amount: 90000 },
+];
+
 const AIInsights = () => {
   const [isRegenerating, setIsRegenerating] = useState(false);
 
@@ -68,6 +98,35 @@ const AIInsights = () => {
       case "impact":
         return <Sparkles size={14} />;
     }
+  };
+
+  // Custom tooltip for pie chart
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+  }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight="500"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
   };
 
   return (
@@ -119,99 +178,80 @@ const AIInsights = () => {
       <div className="insights-charts">
         <div className="chart-card">
           <div className="chart-header">
-            <BarChart3 size={18} />
+            <PieChart size={18} />
             <h3 className="chart-title">Donation by Category</h3>
           </div>
           <div className="pie-chart-container">
-            <svg viewBox="0 0 200 200" className="pie-chart">
-              <circle cx="100" cy="100" r="70" fill="#10b981" />
-              <circle
-                cx="100"
-                cy="100"
-                r="35"
-                fill="transparent"
-                stroke="#fbbf24"
-                strokeWidth="70"
-                strokeDasharray="55 440"
-                transform="rotate(-90 100 100)"
-              />
-              <circle
-                cx="100"
-                cy="100"
-                r="35"
-                fill="transparent"
-                stroke="#22c55e"
-                strokeWidth="70"
-                strokeDasharray="44 440"
-                strokeDashoffset="-55"
-                transform="rotate(-90 100 100)"
-              />
-              <circle
-                cx="100"
-                cy="100"
-                r="35"
-                fill="transparent"
-                stroke="#1f2937"
-                strokeWidth="70"
-                strokeDasharray="22 440"
-                strokeDashoffset="-99"
-                transform="rotate(-90 100 100)"
-              />
-            </svg>
+            <ResponsiveContainer width="100%" height={200}>
+              <RechartsPieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value: number) => [`${value}%`, 'Percentage']}
+                />
+              </RechartsPieChart>
+            </ResponsiveContainer>
             <div className="chart-legend">
-              <div className="legend-item">
-                <span className="legend-color education"></span>
-                <span>Education: 45%</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color healthcare"></span>
-                <span>Healthcare: 25%</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color climate"></span>
-                <span>Climate: 20%</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color women"></span>
-                <span>Women Empowerment: 10%</span>
-              </div>
+              {categoryData.map((entry, index) => (
+                <div key={`legend-${index}`} className="legend-item">
+                  <span 
+                    className="legend-color" 
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span>{entry.name}: {entry.value}%</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         <div className="chart-card">
           <div className="chart-header">
-            <TrendingUp size={18} />
+            <BarChart3 size={18} />
             <h3 className="chart-title">Monthly Giving Trend</h3>
           </div>
           <div className="bar-chart-container">
-            <div className="bar-chart">
-              <div className="bar" style={{ height: "45%" }}>
-                <span className="bar-label">Aug</span>
-              </div>
-              <div className="bar" style={{ height: "55%" }}>
-                <span className="bar-label">Sep</span>
-              </div>
-              <div className="bar" style={{ height: "50%" }}>
-                <span className="bar-label">Oct</span>
-              </div>
-              <div className="bar" style={{ height: "70%" }}>
-                <span className="bar-label">Nov</span>
-              </div>
-              <div className="bar" style={{ height: "80%" }}>
-                <span className="bar-label">Dec</span>
-              </div>
-              <div className="bar" style={{ height: "90%" }}>
-                <span className="bar-label">Jan</span>
-              </div>
-            </div>
-            <div className="y-axis-labels">
-              <span>100000</span>
-              <span>75000</span>
-              <span>50000</span>
-              <span>25000</span>
-              <span>0</span>
-            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip 
+                  formatter={(value: number) => [`₦${value.toLocaleString()}`, 'Amount']}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '0.5rem'
+                  }}
+                />
+                <Bar 
+                  dataKey="amount" 
+                  fill="#10b981"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
