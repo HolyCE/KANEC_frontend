@@ -2,76 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { gsap } from "gsap";
 import { Search, SlidersHorizontal, Users, TrendingUp, Eye, X } from "lucide-react";
+import { API_CONFIG, buildUrl } from "../api/config";
+import axios from "axios";
 import "./projects.css";
-
-const projects = [
-  {
-    id: 1,
-    title: "Digital Education for Rural Communities",
-    description: "Providing tablets and internet access to 500 students in rural Kenya. Empowering the next generation with digital literacy.",
-    category: "Education",
-    image: "/mon1.PNG",
-    raised: 12450,
-    goal: 20000,
-    backers: 187,
-    funded: 62,
-  },
-  {
-    id: 2,
-    title: "Women Entrepreneurs Support Fund",
-    description: "Microloans and training for 200 women entrepreneurs in Nigeria to start sustainable businesses and achieve financial independence.",
-    category: "Women Empowerment",
-    image: "/mon2.PNG",
-    raised: 8900,
-    goal: 15000,
-    backers: 143,
-    funded: 59,
-  },
-  {
-    id: 3,
-    title: "Community Healthcare Clinic",
-    description: "Building and equipping a healthcare facility serving 10,000 people in rural Uganda with essential medical services.",
-    category: "Healthcare",
-    image: "/mon3.PNG",
-    raised: 34500,
-    goal: 50000,
-    backers: 412,
-    funded: 69,
-  },
-  {
-    id: 4,
-    title: "Clean Water Initiative",
-    description: "Installing water purification systems in 5 villages across Tanzania, providing clean drinking water to 3,000 families.",
-    category: "Water & Sanitation",
-    image: "/mon4.PNG",
-    raised: 16200,
-    goal: 25000,
-    backers: 234,
-    funded: 65,
-  },
-  {
-    id: 5,
-    title: "Youth Skills Training Center",
-    description: "Vocational training center teaching technology, agriculture, and trade skills to 300 young people in Ghana.",
-    category: "Education",
-    image: "/mon5.PNG",
-    raised: 7800,
-    goal: 18000,
-    backers: 98,
-    funded: 43,
-  },
-  {
-    id: 6,
-    title: "Solar Energy for Schools",
-    description: "Providing solar panels and batteries to 10 schools in Rwanda, ensuring reliable electricity for learning.",
-    category: "Energy",
-    image: "/mon6.PNG",
-    raised: 21300,
-    goal: 30000,
-    backers: 276,
-    funded: 71,
-  },
-];
 
 const categories = [
   "All Projects",
@@ -82,7 +15,26 @@ const categories = [
   "Energy",
 ];
 
+// API service function
+const projectsAPI = {
+  getProjects: async () => {
+    try {
+      const response = await axios({
+        method: API_CONFIG.projects.list.method,
+        url: buildUrl(API_CONFIG.projects.list.url),
+      });
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
+    }
+  }
+};
+
 const Services = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All Projects");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -91,6 +43,84 @@ const Services = () => {
   const controlsRef = useRef(null);
 
   const heroInView = useInView(heroRef, { once: true });
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log("Fetching projects from:", buildUrl(API_CONFIG.projects.list.url));
+      
+      const data = await projectsAPI.getProjects();
+      console.log("API Response:", data);
+      
+      // Transform API data to match component expectations
+      const transformedProjects = transformProjectsData(data);
+      console.log("Transformed projects:", transformedProjects);
+      
+      setProjects(transformedProjects);
+    } catch (err) {
+      console.error("Error fetching projects:", err);
+      setError("Failed to load projects. Please try again later.");
+      setProjects([]); // Ensure empty array on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Data transformation function
+  const transformProjectsData = (apiData) => {
+    // Handle different possible API response structures
+    if (!apiData) return [];
+    
+    // If API returns array directly
+    if (Array.isArray(apiData)) {
+      return apiData.map(project => ({
+        id: project.id || project._id,
+        title: project.title || project.name || "Untitled Project",
+        description: project.description || "No description available",
+        category: project.category || project.type || "General",
+        image: project.image || project.image_url || project.cover_image || "/placeholder-image.jpg",
+        raised: project.raised || project.amount_raised || project.funds_raised || 0,
+        goal: project.goal || project.funding_goal || project.target_amount || 0,
+        backers: project.backers || project.donors_count || project.supporters || 0,
+      }));
+    }
+    
+    // If API returns object with data property
+    if (apiData.data && Array.isArray(apiData.data)) {
+      return apiData.data.map(project => ({
+        id: project.id || project._id,
+        title: project.title || project.name || "Untitled Project",
+        description: project.description || "No description available",
+        category: project.category || project.type || "General",
+        image: project.image || project.image_url || project.cover_image || "/placeholder-image.jpg",
+        raised: project.raised || project.amount_raised || project.funds_raised || 0,
+        goal: project.goal || project.funding_goal || project.target_amount || 0,
+        backers: project.backers || project.donors_count || project.supporters || 0,
+      }));
+    }
+    
+    // If API returns object with results property
+    if (apiData.results && Array.isArray(apiData.results)) {
+      return apiData.results.map(project => ({
+        id: project.id || project._id,
+        title: project.title || project.name || "Untitled Project",
+        description: project.description || "No description available",
+        category: project.category || project.type || "General",
+        image: project.image || project.image_url || project.cover_image || "/placeholder-image.jpg",
+        raised: project.raised || project.amount_raised || project.funds_raised || 0,
+        goal: project.goal || project.funding_goal || project.target_amount || 0,
+        backers: project.backers || project.donors_count || project.supporters || 0,
+      }));
+    }
+    
+    console.warn("Unexpected API response structure:", apiData);
+    return [];
+  };
 
   useEffect(() => {
     // Hero entrance animation with GSAP
@@ -129,23 +159,61 @@ const Services = () => {
     );
   }, []);
 
-  const filteredProjects =
-    activeCategory === "All Projects"
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
+  // Filter and sort projects
+  const filteredProjects = activeCategory === "All Projects" 
+    ? projects 
+    : projects.filter((p) => p.category === activeCategory);
 
   const searchedProjects = filteredProjects.filter(
     (p) =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase())
+      p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sortedProjects = [...searchedProjects].sort((a, b) => {
-    if (sortBy === "funded") return b.funded - a.funded;
-    if (sortBy === "raised") return b.raised - a.raised;
-    if (sortBy === "backers") return b.backers - a.backers;
+    if (sortBy === "funded") {
+      const aFunded = calculateFundedPercentage(a.raised, a.goal);
+      const bFunded = calculateFundedPercentage(b.raised, b.goal);
+      return bFunded - aFunded;
+    }
+    if (sortBy === "raised") return (b.raised || 0) - (a.raised || 0);
+    if (sortBy === "backers") return (b.backers || 0) - (a.backers || 0);
     return 0;
   });
+
+  const calculateFundedPercentage = (raised, goal) => {
+    if (!goal || goal === 0) return 0;
+    return Math.min(Math.round((raised / goal) * 100), 100);
+  };
+
+  // Debug: Check what data we have
+  console.log("Current projects state:", projects);
+  console.log("Filtered projects:", filteredProjects);
+  console.log("Sorted projects:", sortedProjects);
+
+  if (loading) {
+    return (
+      <div className="services-container">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          Loading projects from API...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="services-container">
+        <div className="error-message">
+          <p>{error}</p>
+          <button onClick={fetchProjects} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="services-container">
@@ -162,6 +230,11 @@ const Services = () => {
           Browse verified social impact projects across Africa. Every donation is
           tracked on blockchain.
         </p>
+        
+        {/* Debug info - remove in production */}
+        <div style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
+          Showing {sortedProjects.length} projects from API
+        </div>
       </motion.div>
 
       <div ref={controlsRef} className="services-controls">
@@ -237,64 +310,80 @@ const Services = () => {
       </motion.div>
 
       <div className="projects-grid">
-        {sortedProjects.map((project, index) => (
-          <motion.div
-            key={project.id}
-            className="project-card"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            whileHover={{ y: -4 }}
-          >
-            <div className="project-image-wrapper">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="project-image"
-              />
-              <div className="project-category-badge">{project.category}</div>
-            </div>
-
-            <div className="project-content">
-              <h3 className="project-title">{project.title}</h3>
-              <p className="project-description">{project.description}</p>
-
-              <div className="project-progress">
-                <div className="progress-amounts">
-                  <span className="amount-raised">{project.raised} HBAR</span>
-                  <span className="amount-goal">of {project.goal} HBAR</span>
-                </div>
-                <div className="progress-bar-container">
-                  <motion.div
-                    className="progress-bar-fill"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${project.funded}%` }}
-                    transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+        {sortedProjects.length === 0 ? (
+          <div className="no-projects">
+            <p>No projects found matching your criteria.</p>
+            <button onClick={fetchProjects} className="retry-button">
+              Refresh Projects
+            </button>
+          </div>
+        ) : (
+          sortedProjects.map((project, index) => {
+            const fundedPercentage = calculateFundedPercentage(project.raised, project.goal);
+            
+            return (
+              <motion.div
+                key={project.id}
+                className="project-card"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="project-image-wrapper">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="project-image"
+                    onError={(e) => {
+                      e.target.src = "/placeholder-image.jpg";
+                    }}
                   />
+                  <div className="project-category-badge">{project.category}</div>
                 </div>
-              </div>
 
-              <div className="project-stats">
-                <div className="stat-item">
-                  <Users className="stat-icon" />
-                  <span>{project.backers} backers</span>
-                </div>
-                <div className="stat-item">
-                  <TrendingUp className="stat-icon" />
-                  <span className="stat-percent">{project.funded}% funded</span>
-                </div>
-              </div>
+                <div className="project-content">
+                  <h3 className="project-title">{project.title}</h3>
+                  <p className="project-description">{project.description}</p>
 
-              <div className="project-actions">
-                <button className="btn-view">
-                  <Eye size={16} />
-                  View Details
-                </button>
-                <button className="btn-support">Support Project</button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+                  <div className="project-progress">
+                    <div className="progress-amounts">
+                      <span className="amount-raised">{project.raised.toLocaleString()} HBAR</span>
+                      <span className="amount-goal">of {project.goal.toLocaleString()} HBAR</span>
+                    </div>
+                    <div className="progress-bar-container">
+                      <motion.div
+                        className="progress-bar-fill"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${fundedPercentage}%` }}
+                        transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="project-stats">
+                    <div className="stat-item">
+                      <Users className="stat-icon" />
+                      <span>{project.backers} backers</span>
+                    </div>
+                    <div className="stat-item">
+                      <TrendingUp className="stat-icon" />
+                      <span className="stat-percent">{fundedPercentage}% funded</span>
+                    </div>
+                  </div>
+
+                  <div className="project-actions">
+                    <button className="btn-view">
+                      <Eye size={16} />
+                      View Details
+                    </button>
+                    <button className="btn-support">Support Project</button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })
+        )}
       </div>
     </div>
   );

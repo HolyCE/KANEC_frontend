@@ -91,8 +91,8 @@ const Dashboard = () => {
 
       {/* Hero Section */}
       <div className="impact-hero">
-        <div className="hero-content">
-          <h2 className="hero-title">Your Impact This Year</h2>
+        <div className="heros-content">
+          <h2>Your Impact This Year</h2>
           <p className="hero-text">₦284,000 donated to 24 projects across 15 communities</p>
         </div>
         <button className="hero-btn">

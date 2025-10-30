@@ -50,8 +50,8 @@ const BlockchainSection = () => {
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <p className="blockchain-badge">Hedera Technology</p>
-          <h2 className="blockchain-title">See Every Transaction On-Chain</h2>
+          <p className="blockchain-badge">Powered by Hedera</p>
+          <h2 className="blockchain-title">See Every Transaction<br/> On-Chain</h2>
           <p className="blockchain-description">
             Every dollar donated is recorded on Hedera's public ledger, providing an undeniable, transparent record of all transactions.
           </p>
@@ -69,8 +69,6 @@ const BlockchainSection = () => {
               </div>
             ))}
           </div>
-
-          <button className="blockchain-button">View Transactions</button>
         </motion.div>
       </div>
     </section>

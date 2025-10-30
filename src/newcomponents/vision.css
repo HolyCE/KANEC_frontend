@@ -17,11 +17,11 @@
 }
 
 .vision-description {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: hsl(var(--muted-foreground));
-  line-height: 1.8;
+  line-height: 2;
   margin: 0;
-}
+
 
 @media (max-width: 800px) {
   .vision {

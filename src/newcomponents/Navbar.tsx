@@ -6,51 +6,59 @@ import './navbar.css';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const closeMobileMenu = () => {
-    setIsOpen(false);
-  };
+  const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <div className="navbar-brand">
-          <Link to="/" className="logo" onClick={closeMobileMenu}>
-            <img 
-              src="/reallogo.png" 
-              alt="KANEC IMPACT LEDGER" 
-              className="logo-image"
+    <nav className="site-navbar">
+      <div className="navbar-inner">
+        {/* LOGO - LEFT ALIGNED */}
+        <div className="brand-wrapper">
+          <Link to="/" className="brand-link" onClick={closeMenu}>
+            <img
+              src="/logo.jpg"
+              alt="KANEC IMPACT LEDGER"
+              className="brand-logo"
             />
-            <div className="logo-text">
-              <span className="logo-main">KANEC</span>
-              <span className="logo-sub">IMPACT LEDGER</span>
+            <div className="brand-texts">
+              <span className="brand-titles">KANEC</span>
+              <span className="brand-subtitles">IMPACT LEDGER</span>
             </div>
           </Link>
         </div>
 
-        <button 
-          className="hamburger"
+        {/* MOBILE TOGGLE */}
+        <button
+          className="mobile-toggle"
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
+          aria-label="Toggle navigation"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <div className={`navbar-menu ${isOpen ? 'open' : ''}`}>
-          <Link to="/" className="nav-link" onClick={closeMobileMenu}>
-            Home
-          </Link>
-          <Link to="/projects" className="nav-link" onClick={closeMobileMenu}>
-            Projects
-          </Link>
-          <Link to="/donors" className="nav-link" onClick={closeMobileMenu}>
-            Donors
-          </Link>
-          <Link to="/signin" className="btn-login" onClick={closeMobileMenu}>
-            Log In
-          </Link>
-          <Link to="/donate" className="btn-donate" onClick={closeMobileMenu}>
-            Donate
-          </Link>
+        {/* NAV MENU */}
+        <div className={`nav-menu ${isOpen ? 'menu-open' : ''}`}>
+          {/* NAV LINKS - CENTERED */}
+          <div className="nav-links">
+            <Link to="/" className="nav-item" onClick={closeMenu}>
+              Home
+            </Link>
+            <Link to="/projects" className="nav-item" onClick={closeMenu}>
+              Projects
+            </Link>
+            <Link to="/about" className="nav-item" onClick={closeMenu}>
+              About
+            </Link>
+          </div>
+
+          {/* ACTION BUTTONS - RIGHT */}
+          <div className="action-buttons">
+            <Link to="/signin" className="btn-signin" onClick={closeMenu}>
+              Log In
+            </Link>
+            <Link to="/donate" className="btn-contact" onClick={closeMenu}>
+              Contact
+            </Link>
+          </div>
         </div>
       </div>
     </nav>

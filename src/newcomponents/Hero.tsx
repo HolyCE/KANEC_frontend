@@ -1,8 +1,39 @@
 import { motion } from 'framer-motion';
 import { Check, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import './hero.css';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  // ✅ Clear session if page is refreshed
+  useEffect(() => {
+    const hasRefreshed = sessionStorage.getItem('hasRefreshed');
+    if (!hasRefreshed) {
+      sessionStorage.clear();
+      sessionStorage.setItem('hasRefreshed', 'true');
+    }
+  }, []);
+
+  const handleDonate = () => {
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/signin');
+    }
+  };
+
+  const handleJoin = () => {
+    const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/signin');
+    }
+  };
+
   return (
     <section className="hero">
       <div className="hero-container">
@@ -22,12 +53,14 @@ const Hero = () => {
           </h1>
           
           <p className="hero-description">
-            With <strong>Kanec Impact Ledger</strong>, donors see every dollar flow in real time ensuring funds reach verified African project projects without corruption.
+            With <strong>Kanec Impact Ledger</strong>, donors see every dollar<br/> 
+            move in real time ensuring funds reach verified African<br/> 
+            impact projects without corruption.
           </p>
           
           <div className="hero-actions">
-            <button className="btn-primary">Donate Now</button>
-            <button className="btn-secondary">Join the Network</button>
+            <button className="btn-primary" onClick={handleDonate}>Donate Now</button>
+            <button className="btn-secondary" onClick={handleJoin}>Join the Network</button>
           </div>
         </motion.div>
 

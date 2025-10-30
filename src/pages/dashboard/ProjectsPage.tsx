@@ -1,85 +1,127 @@
-import { useState } from "react";
-import { MapPin, CheckCircle, TrendingUp, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  MapPin,
+  CheckCircle,
+  TrendingUp,
+  Sparkles,
+  RefreshCw,
+} from "lucide-react";
+import { API_CONFIG, buildUrl } from "../../api/config";
+import axios from "axios";
 import "./Projects.css";
 
-const projects = [
-  {
-    id: 1,
-    title: "Clean Water Nigeria",
-    description: "Providing access to clean water for 5,000 rural families",
-    category: "Water",
-    image: "/mon1.PNG",
-    raised: 180000,
-    goal: 250000,
-    location: "Nigeria",
-    verified: true,
-  },
-  {
-    id: 2,
-    title: "Solar Power for Schools",
-    description: "Installing solar panels in 20 rural schools",
-    category: "Energy",
-    image: "/mon2.PNG",
-    raised: 420000,
-    goal: 500000,
-    location: "Kenya",
-    verified: true,
-    trending: true,
-  },
-  {
-    id: 3,
-    title: "Healthcare for Rural Women",
-    description: "Mobile clinics serving 10,000 women in remote areas",
-    category: "Healthcare",
-    image: "/mon3.PNG",
-    raised: 95000,
-    goal: 200000,
-    location: "Uganda",
-    verified: true,
-    new: true,
-  },
-  {
-    id: 4,
-    title: "Education Fund Initiative",
-    description: "Scholarships for 500 underprivileged students",
-    category: "Education",
-    image: "/mon4.PNG",
-    raised: 310000,
-    goal: 400000,
-    location: "Ghana",
-    verified: true,
-  },
-  {
-    id: 5,
-    title: "Youth Empowerment Programme",
-    description: "Skills training for 1,000 youth in tech and entrepreneurship",
-    category: "Education",
-    image: "/mon5.PNG",
-    raised: 145000,
-    goal: 300000,
-    location: "Tanzania",
-    verified: true,
-  },
-  {
-    id: 6,
-    title: "Renewable Energy Initiative",
-    description: "Community-owned wind farm project",
-    category: "Energy",
-    image: "/mon6.PNG",
-    raised: 560000,
-    goal: 750000,
-    location: "Morocco",
-    verified: true,
-    trending: true,
-  },
-];
-
 const ProjectsPage = () => {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const apiUrl = buildUrl(API_CONFIG.projects.list.url);
+      console.log("Fetching projects from:", apiUrl);
+
+      const response = await axios({
+        method: API_CONFIG.projects.list.method,
+        url: apiUrl,
+        timeout: 10000,
+      });
+
+      console.log("API response:", response.data);
+
+      if (!response.data) {
+        console.warn("API returned empty data");
+        setProjects([]);
+        return;
+      }
+
+      const transformed = transformProjectsData(response.data);
+      console.log("Transformed projects:", transformed);
+      setProjects(transformed);
+    } catch (err: any) {
+      console.error("API error:", err);
+      setError(`Failed to load projects: ${err.message}`);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const transformProjectsData = (apiData: any): any[] => {
+    if (!apiData) return [];
+
+    let projectsArray: any[] = [];
+
+    if (Array.isArray(apiData)) {
+      projectsArray = apiData;
+    } else if (apiData.data && Array.isArray(apiData.data)) {
+      projectsArray = apiData.data;
+    } else if (apiData.results && Array.isArray(apiData.results)) {
+      projectsArray = apiData.results;
+    } else if (apiData.projects && Array.isArray(apiData.projects)) {
+      projectsArray = apiData.projects;
+    } else {
+      console.warn("Unknown API response structure:", apiData);
+      return [];
+    }
+
+    return projectsArray.map((project, idx) => ({
+      id: project.id || project._id || `project-${idx}`,
+      title: project.title || project.name || "Untitled Project",
+      description:
+        project.description || project.summary || "No description available",
+      category:
+        project.category ||
+        project.type ||
+        project.tags?.[0] ||
+        "General",
+      image:
+        project.image ||
+        project.image_url ||
+        project.cover_image ||
+        project.thumbnail ||
+        "/placeholder-image.jpg",
+      raised:
+        Number(project.raised) ||
+        Number(project.amount_raised) ||
+        Number(project.funds_raised) ||
+        Number(project.current_funding) ||
+        0,
+      goal:
+        Number(project.goal) ||
+        Number(project.funding_goal) ||
+        Number(project.target_amount) ||
+        Number(project.target_funding) ||
+        1000,
+      location:
+        project.location || project.country || project.region || "Africa",
+      verified: Boolean(
+        project.verified ||
+          project.is_verified ||
+          project.verified_status ||
+          true
+      ),
+      trending: Boolean(project.trending || project.is_trending || false),
+      new: Boolean(
+        project.new ||
+          project.is_new ||
+          project.recently_added ||
+          false
+      ),
+    }));
+  };
+
   const filteredProjects = projects.filter((project) => {
-    const matchesCategory = categoryFilter === "all" || project.category === categoryFilter;
+    const matchesCategory =
+      categoryFilter === "all" || project.category === categoryFilter;
     const matchesStatus =
       statusFilter === "all" ||
       (statusFilter === "verified" && project.verified) ||
@@ -89,20 +131,54 @@ const ProjectsPage = () => {
   });
 
   const calculateProgress = (raised: number, goal: number) =>
-    Math.round((raised / goal) * 100);
+    Math.min(Math.round((raised / goal) * 100), 100);
+
+  const categories = [
+    "all",
+    ...new Set(projects.map((p) => p.category).filter(Boolean)),
+  ];
+
+  /* ------------------------------------------------------------------ */
+  /* -------------------------- UI RENDERING -------------------------- */
+  /* ------------------------------------------------------------------ */
+
+  if (loading) {
+    return (
+      <div className="projects-page">
+        <div className="loading-spinner">
+          <div className="spinner" />
+          <p>Loading projects...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="projects-page">
+        <div className="error-message">
+          <h3>Error Loading Projects</h3>
+          <p>{error}</p>
+          <button onClick={fetchProjects} className="retry-button">
+            <RefreshCw size={16} />
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="projects-page">
+      {/* Header */}
       <div className="projects-header">
-        <div>
-          <h1 className="projects-title">Projects</h1>
-          <p className="projects-subtitle">
-            Discover and support verified social impact projects
-          </p>
-        </div>
+        <h1 className="projects-title">Projects</h1>
+        <p className="projects-subtitle">
+          Discover and support verified social impact projects
+        </p>
       </div>
 
-      {/* Filter Section */}
+      {/* Filters */}
       <div className="projects-filters">
         <div className="filter-left">
           <span className="filter-label">Filter by:</span>
@@ -112,16 +188,21 @@ const ProjectsPage = () => {
             className="category-select"
           >
             <option value="all">All Categories</option>
-            <option value="Water">Water</option>
-            <option value="Energy">Energy</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Education">Education</option>
+            {categories
+              .filter((c) => c !== "all")
+              .map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
           </select>
         </div>
 
         <div className="filter-right">
           <button
-            className={`status-badge verified ${statusFilter === "verified" ? "active" : ""}`}
+            className={`status-badge verified ${
+              statusFilter === "verified" ? "active" : ""
+            }`}
             onClick={() =>
               setStatusFilter(statusFilter === "verified" ? "all" : "verified")
             }
@@ -129,8 +210,11 @@ const ProjectsPage = () => {
             <CheckCircle size={14} />
             Verified
           </button>
+
           <button
-            className={`status-badge trending ${statusFilter === "trending" ? "active" : ""}`}
+            className={`status-badge trending ${
+              statusFilter === "trending" ? "active" : ""
+            }`}
             onClick={() =>
               setStatusFilter(statusFilter === "trending" ? "all" : "trending")
             }
@@ -138,8 +222,11 @@ const ProjectsPage = () => {
             <TrendingUp size={14} />
             Trending
           </button>
+
           <button
-            className={`status-badge new ${statusFilter === "new" ? "active" : ""}`}
+            className={`status-badge new ${
+              statusFilter === "new" ? "active" : ""
+            }`}
             onClick={() =>
               setStatusFilter(statusFilter === "new" ? "all" : "new")
             }
@@ -152,56 +239,100 @@ const ProjectsPage = () => {
 
       {/* Project Grid */}
       <div className="projects-grid">
-        {filteredProjects.map((project) => (
-          <div key={project.id} className="project-card">
-            <div className="project-image-container">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="project-image"
-              />
-              {project.verified && (
-                <div className="verified-badge">
-                  <CheckCircle size={18} />
-                </div>
-              )}
+        {filteredProjects.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <Sparkles size={48} />
             </div>
-
-            <div className="project-card-content">
-              <h3 className="project-card-title">{project.title}</h3>
-              <p className="project-card-description">{project.description}</p>
-
-              <div className="project-meta">
-                <div className="project-location">
-                  <MapPin size={14} />
-                  <span>{project.location}</span>
-                </div>
-                <span className="project-category-badge">{project.category}</span>
-              </div>
-
-              <div className="project-funding">
-                <div className="funding-amounts">
-                  <span className="amount-raised">
-                    ₦{project.raised.toLocaleString()}
-                  </span>
-                  <span className="amount-goal">
-                    of ₦{project.goal.toLocaleString()}
-                  </span>
-                </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{
-                      width: `${calculateProgress(project.raised, project.goal)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <button className="view-details-btn">View Details</button>
-            </div>
+            <h3>No Projects Found</h3>
+            <p>
+              {projects.length === 0
+                ? "There are no projects in the system yet. Check back later for new projects!"
+                : "No projects match your current filters. Try adjusting your criteria."}
+            </p>
+            <button onClick={fetchProjects} className="retry-button">
+              <RefreshCw size={16} />
+              Refresh Projects
+            </button>
           </div>
-        ))}
+        ) : (
+          filteredProjects.map((project) => (
+            <div key={project.id} className="project-card">
+              <div className="project-image-container">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="project-image"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "/placeholder-image.jpg";
+                  }}
+                />
+                {project.verified && (
+                  <div className="verified-badge">
+                    <CheckCircle size={18} />
+                  </div>
+                )}
+                {project.trending && (
+                  <div className="trending-badge">
+                    <TrendingUp size={18} />
+                  </div>
+                )}
+                {project.new && (
+                  <div className="new-badge">
+                    <Sparkles size={18} />
+                  </div>
+                )}
+              </div>
+
+              <div className="project-card-content">
+                <h3 className="project-card-title">{project.title}</h3>
+                <p className="project-card-description">
+                  {project.description}
+                </p>
+
+                <div className="project-meta">
+                  <div className="project-location">
+                    <MapPin size={14} />
+                    <span>{project.location}</span>
+                  </div>
+                  <span className="project-category-badge">
+                    {project.category}
+                  </span>
+                </div>
+
+                <div className="project-funding">
+                  <div className="funding-amounts">
+                    <span className="amount-raised">
+                      ₦{project.raised.toLocaleString()}
+                    </span>
+                    <span className="amount-goal">
+                      of ₦{project.goal.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{
+                        width: `${calculateProgress(
+                          project.raised,
+                          project.goal
+                        )}%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="progress-percentage">
+                    {calculateProgress(project.raised, project.goal)}% funded
+                  </div>
+                </div>
+
+                <button className="view-details-btn">View Details</button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

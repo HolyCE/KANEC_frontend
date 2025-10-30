@@ -18,7 +18,7 @@ const Vision = () => {
       >
         <h2 className="vision-title">Our Vision</h2>
         <p className="vision-description">
-          To create a world where every donation is transparent, accountable, and impactful, empowering donors and communities through a decentralized ledger on Hedera.
+          To create a world where every donation is transparent, accountable, and impactful, empowering donors and<br/> communities through a decentralized ledger on Hedera.
         </p>
       </motion.div>
     </section>

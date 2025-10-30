@@ -42,7 +42,7 @@ const WhyChoose = () => {
         <div className="features-header">
           <p className="features-badge">Blockchain Transparency</p>
           <h2 className="features-title">
-            Why choose <span className="features-highlight">KANEC</span>
+            Why choose<br/><span className="features-highlight">KANEC</span>
           </h2>
           <p className="features-description">
             Built on Hedera's blockchain, every transaction is transparent, verified, and immutable. Trust through technology.

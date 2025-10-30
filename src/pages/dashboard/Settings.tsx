@@ -24,7 +24,7 @@ const Settings = () => {
 
   const handleLogout = () => {
     console.log('Logging out...');
-    window.location.href = '/auth';
+    window.location.href = '/';
   };
 
   return (

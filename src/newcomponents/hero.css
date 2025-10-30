@@ -9,7 +9,7 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  gap: 7rem;
   align-items: center;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .hero-title {
-  font-size: 3rem;
+  font-size: 3.2rem;
   font-weight: 700;
   line-height: 1.1;
   color: hsl(var(--foreground));
@@ -47,7 +47,7 @@
 .hero-description {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--foreground));
   margin: 0;
 }
 
@@ -58,35 +58,37 @@
 }
 
 .btn-primary {
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: hsl(var(--accent));
+  color: #fff;
   border: none;
-  padding: 0.875rem 2rem;
-  border-radius: 8px;
+  border-radius: 2rem;
+  padding: 0.85rem 1.9rem ;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: 0.3s;
 }
 
 .btn-primary:hover {
+  background-color: green;
   transform: translateY(-2px);
   box-shadow: var(--shadow-card-hover);
 }
 
 .btn-secondary {
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-  border: 2px solid hsl(var(--border));
-  padding: 0.875rem 2rem;
-  border-radius: 8px;
+  background-color: #fff;
+  color: #111827;
+  border: 1.8px solid #111827;
+  border-radius: 2rem;
+  padding: 0.85rem 1.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: 0.3s;
 }
 
 .btn-secondary:hover {
+  transform: translateY(-2px);
   border-color: hsl(var(--primary));
   background: hsl(var(--secondary));
 }
@@ -168,6 +170,10 @@
   color: hsl(var(--accent));
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+.card-stats .stat:last-child .stat-value {
+  margin-left: 0.5rem;
 }
 
 @media (max-width: 800px) {

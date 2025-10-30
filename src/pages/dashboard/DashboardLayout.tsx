@@ -36,7 +36,8 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     console.log('Logging out...');
-    navigate('/signin');
+    sessionStorage.clear(); // removes all session data
+    navigate("/signin");
   };
 
   return (
