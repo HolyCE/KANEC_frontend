@@ -351,7 +351,7 @@ const SignInPage = () => {
 
               <form onSubmit={handleForgotPassword} className="auth-form">
                 {forgotPasswordStep === 1 && (
-                  <div className="form-group">
+                  <div className="forms-group">
                     <label>Email</label>
                     <input
                       type="email"
