@@ -22,7 +22,7 @@ const About = () => {
     {
       name: "Esimke Chisom Emmanuel",
       role: "FRONTEND DEVELOPER",
-      image: "mrchi.jpg"
+      image: "aichisom.jpg"
     },
     {
       name: "Olise Oseyenum Kenneth",
