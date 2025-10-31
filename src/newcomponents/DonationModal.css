@@ -1,0 +1,159 @@
+/* Overlay */
+.donate-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Modal Base */
+.donate-modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* X Button */
+.close-x {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.close-x:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Confirm Modal */
+.donate-modal.confirm h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  text-align: center;
+  color: #1f2937;
+}
+.subtitle {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+  text-align: center;
+}
+.amount-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+.amount-line .value {
+  color: #10b981;
+  font-weight: 600;
+}
+.amount-line.total {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-top: 2px solid #10b981;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+.cancel-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.cancel-btn:hover { background: #e5e7eb; }
+.confirm-btn {
+  background: #10b981;
+  color: white;
+}
+.confirm-btn:hover { background: #059669; }
+
+/* Congrats Modal */
+.donate-modal.congrats {
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+.success-check {
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+.donate-modal.congrats h2 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  color: #1f2937;
+}
+.donate-modal.congrats p {
+  color: #6b7280;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+.tx-id {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin: 1rem 0;
+}
+.done-btn {
+  width: 100%;
+  padding: 0.875rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+.done-btn:hover { background: #059669; }
+
+/* MOBILE: FULL-SCREEN BOTTOM SHEET */
+@media (max-width: 768px) {
+  .donate-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .donate-modal {
+    max-width: none;
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .amount-line { padding: 1rem 0; font-size: 1.1rem; }
+  .modal-actions { gap: 1rem; }
+  .cancel-btn, .confirm-btn, .done-btn {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}

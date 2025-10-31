@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { gsap } from "gsap";
-import { Search, SlidersHorizontal, Users, TrendingUp, Eye, X } from "lucide-react";
+import { Search, SlidersHorizontal, Users, TrendingUp, Eye, X, MapPin, CheckCircle } from "lucide-react";
 import { API_CONFIG, API_BASE_URL } from "../api/config";
 import axios from "axios";
 import "./projects.css";
@@ -24,6 +24,7 @@ const Projects = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("funded");
+  const [selectedProject, setSelectedProject] = useState(null);
   const heroRef = useRef(null);
   const controlsRef = useRef(null);
 
@@ -47,7 +48,6 @@ const Projects = () => {
       const data = response.data;
       console.log("API Response:", data);
       
-      // Transform API data to match component expectations
       const transformedProjects = transformProjectsData(data);
       console.log("Transformed projects:", transformedProjects);
       
@@ -61,7 +61,7 @@ const Projects = () => {
     }
   };
 
-  // FIXED: Correct image URL construction
+  // IMPROVED: Better image URL construction with multiple fallbacks
   const transformProjectsData = (apiData) => {
     if (!apiData || !Array.isArray(apiData)) {
       console.warn("Unexpected API response structure:", apiData);
@@ -69,16 +69,32 @@ const Projects = () => {
     }
     
     return apiData.map(project => {
-      // Construct the correct image URL
       let imageUrl;
+      
+      // Try multiple image URL strategies
       if (project.image) {
-        // The API returns "/static/projects/filename.webp"
-        // We need to construct: "https://api.konasalti.com/kanec/static/projects/filename.webp"
-        imageUrl = `${API_BASE_URL}${project.image}`;
-        console.log(`Image URL for ${project.title}:`, imageUrl);
+        if (project.image.startsWith('/static/')) {
+          // Format: "/static/projects/filename.webp"
+          imageUrl = `${API_BASE_URL}${project.image}`;
+        } else if (project.image.startsWith('/projects/') && project.image.endsWith('/image')) {
+          // Format: "/projects/{id}/image"
+          imageUrl = `${API_BASE_URL}${project.image}`;
+        } else if (project.image.startsWith('http')) {
+          // Already full URL
+          imageUrl = project.image;
+        } else {
+          // Unknown format, try project ID approach
+          imageUrl = project.id ? `${API_BASE_URL}/api/v1/projects/${project.id}/image` : getPlaceholderImage(project.title);
+        }
+      } else if (project.id) {
+        // No image provided, try to construct from project ID
+        imageUrl = `${API_BASE_URL}/api/v1/projects/${project.id}/image`;
       } else {
-        imageUrl = "/placeholder-image.jpg";
+        // Final fallback
+        imageUrl = getPlaceholderImage(project.title);
       }
+      
+      console.log(`Image URL for ${project.title}:`, imageUrl);
       
       return {
         id: project.id,
@@ -97,8 +113,34 @@ const Projects = () => {
     });
   };
 
+  const getPlaceholderImage = (title) => {
+    const colors = ['22c55e', '3b82f6', 'f59e0b', 'ef4444', '8b5cf6', '06b6d4'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const text = encodeURIComponent(title || 'Project Image');
+    return `https://via.placeholder.com/400x250/${color}/ffffff?text=${text}`;
+  };
+
+  const handleViewDetails = (project) => {
+    setSelectedProject(project);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+  };
+
+  const handleSupportProject = (project) => {
+    // Store project for donation page
+    const projectData = {
+      id: project.id,
+      name: project.title,
+      category: project.category
+    };
+    localStorage.setItem('selectedProject', JSON.stringify(projectData));
+    // Navigate to donations page
+    window.location.href = '/donations';
+  };
+
   useEffect(() => {
-    // Hero entrance animation with GSAP
     if (heroInView) {
       gsap.fromTo(
         heroRef.current,
@@ -117,7 +159,6 @@ const Projects = () => {
   }, [heroInView]);
 
   useEffect(() => {
-    // Controls slide in animation
     gsap.fromTo(
       controlsRef.current,
       {
@@ -167,6 +208,14 @@ const Projects = () => {
     return `₦${parseInt(amount).toLocaleString()}`;
   };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   if (loading) {
     return (
       <div className="services-container">
@@ -214,26 +263,11 @@ const Projects = () => {
           <div className="stat-badge">
             <strong>{projects.filter(p => p.verified).length}</strong> Verified
           </div>
+          <div className="stat-badge">
+            <strong>₦{projects.reduce((sum, p) => sum + (p.raised || 0), 0).toLocaleString()}</strong> Total Raised
+          </div>
         </div>
       </motion.div>
-
-      {/* Debug Info - Remove in production */}
-      {projects.length > 0 && (
-        <div style={{ 
-          background: '#f3f4f6', 
-          padding: '15px', 
-          borderRadius: '8px', 
-          margin: '15px 0',
-          fontSize: '12px',
-          border: '1px solid #e5e7eb'
-        }}>
-          <strong>Debug - First Project Image:</strong><br/>
-          URL: {projects[0].image}<br/>
-          <a href={projects[0].image} target="_blank" rel="noopener noreferrer">
-            Test Image Link
-          </a>
-        </div>
-      )}
 
       <div ref={controlsRef} className="services-controls">
         <div className="search-wrapper">
@@ -342,13 +376,25 @@ const Projects = () => {
                     className="project-image"
                     onError={(e) => {
                       console.error(`Failed to load image: ${project.image}`);
-                      e.target.src = "https://via.placeholder.com/400x250/22c55e/ffffff?text=Project+Image";
+                      // Try alternative URL
+                      const altUrl = project.id ? 
+                        `${API_BASE_URL}/api/v1/projects/${project.id}/image` : 
+                        getPlaceholderImage(project.title);
+                      
+                      if (e.target.src !== altUrl) {
+                        e.target.src = altUrl;
+                      } else {
+                        e.target.src = getPlaceholderImage(project.title);
+                      }
                     }}
                     onLoad={() => console.log(`✅ Image loaded: ${project.image}`)}
                   />
                   <div className="project-category-badge">{project.category}</div>
                   {project.verified && (
-                    <div className="verified-badge">Verified</div>
+                    <div className="verified-badge">
+                      <CheckCircle size={14} />
+                      Verified
+                    </div>
                   )}
                 </div>
 
@@ -357,7 +403,8 @@ const Projects = () => {
                   <p className="project-description">{project.description}</p>
                   
                   <div className="project-location">
-                    <span>📍 {project.location}</span>
+                    <MapPin size={14} />
+                    <span>{project.location}</span>
                   </div>
 
                   <div className="project-progress">
@@ -378,21 +425,29 @@ const Projects = () => {
 
                   <div className="project-stats">
                     <div className="stat-item">
-                      <Users className="stat-icon" />
+                      <Users size={14} />
                       <span>{project.backers} backers</span>
                     </div>
                     <div className="stat-item">
-                      <TrendingUp className="stat-icon" />
+                      <TrendingUp size={14} />
                       <span className="stat-percent">{fundedPercentage}% funded</span>
                     </div>
                   </div>
 
                   <div className="project-actions">
-                    <button className="btn-view">
+                    <button 
+                      className="btn-view"
+                      onClick={() => handleViewDetails(project)}
+                    >
                       <Eye size={16} />
                       View Details
                     </button>
-                    <button className="btn-support">Support Project</button>
+                    <button 
+                      className="btn-support"
+                      onClick={() => handleSupportProject(project)}
+                    >
+                      Support Project
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -400,6 +455,94 @@ const Projects = () => {
           })
         )}
       </div>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="project-details-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Project Details</h2>
+              <button className="close-button" onClick={handleCloseModal}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-content">
+              <div className="project-hero-modal">
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="project-hero-image"
+                  onError={(e) => {
+                    e.target.src = getPlaceholderImage(selectedProject.title);
+                  }}
+                />
+                <div className="project-badges-modal">
+                  {selectedProject.verified && (
+                    <span className="badge verified">
+                      <CheckCircle size={16} />
+                      Verified Project
+                    </span>
+                  )}
+                  <span className="badge category">{selectedProject.category}</span>
+                </div>
+              </div>
+
+              <div className="project-info-modal">
+                <h1 className="project-title-modal">{selectedProject.title}</h1>
+                <p className="project-description-modal">{selectedProject.description}</p>
+
+                <div className="project-stats-modal">
+                  <div className="stat-card-modal">
+                    <div className="stat-value">{formatCurrency(selectedProject.raised)}</div>
+                    <div className="stat-label">Amount Raised</div>
+                  </div>
+                  <div className="stat-card-modal">
+                    <div className="stat-value">{formatCurrency(selectedProject.goal)}</div>
+                    <div className="stat-label">Funding Goal</div>
+                  </div>
+                  <div className="stat-card-modal">
+                    <div className="stat-value">{selectedProject.backers}</div>
+                    <div className="stat-label">Supporters</div>
+                  </div>
+                  <div className="stat-card-modal">
+                    <div className="stat-value">{calculateFundedPercentage(selectedProject.raised, selectedProject.goal)}%</div>
+                    <div className="stat-label">Funded</div>
+                  </div>
+                </div>
+
+                <div className="project-meta-modal">
+                  <div className="meta-item">
+                    <MapPin size={16} />
+                    <span><strong>Location:</strong> {selectedProject.location}</span>
+                  </div>
+                  <div className="meta-item">
+                    <strong>Wallet Address:</strong> 
+                    <span className="wallet-address">{selectedProject.wallet_address || 'Not specified'}</span>
+                  </div>
+                  {selectedProject.created_at && (
+                    <div className="meta-item">
+                      <strong>Created:</strong> {formatDate(selectedProject.created_at)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button className="secondary-btn" onClick={handleCloseModal}>
+                Close
+              </button>
+              <button 
+                className="primary-btn"
+                onClick={() => handleSupportProject(selectedProject)}
+              >
+                Support This Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
