@@ -3,6 +3,7 @@ import {
   CheckCircle,
   Wallet,
   RefreshCw,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { API_CONFIG, buildUrl } from "../../api/config";
@@ -12,13 +13,16 @@ import "./Donations.css";
 const currencies = [{ code: "HBAR", name: "Hedera HBAR", symbol: "ℏ" }];
 
 const Donations = () => {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState("");
   const [amount, setAmount] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState("HBAR");
   const [donating, setDonating] = useState(false);
+  const [view, setView] = useState("donate");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [lastDonation, setLastDonation] = useState(null);
 
   const walletAddress = "0xA3D...F98";
   const transactionFee = "~0.0001 HBAR";
@@ -51,7 +55,7 @@ const Donations = () => {
       const transformed = transformProjectsData(data);
       console.log("Transformed:", transformed);
       setProjects(transformed);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Fetch error:", err);
       setError("Failed to load projects.");
       setProjects([]);
@@ -60,10 +64,10 @@ const Donations = () => {
     }
   };
 
-  const transformProjectsData = (apiData: any): any[] => {
+  const transformProjectsData = (apiData) => {
     if (!apiData) return [];
 
-    let arr: any[] = [];
+    let arr = [];
     if (Array.isArray(apiData)) arr = apiData;
     else if (apiData?.data && Array.isArray(apiData.data)) arr = apiData.data;
     else if (apiData?.results && Array.isArray(apiData.results)) arr = apiData.results;
@@ -91,19 +95,40 @@ const Donations = () => {
       const proj = projects.find((p) => p.name === selectedProject);
       if (!proj) return toast.error("Project not found");
 
-      await axios({
+      const response = await axios({
         method: API_CONFIG.donations.make.method,
         url: buildUrl(API_CONFIG.donations.make.url),
         data: { project_id: proj.id, amount: Number(amount), currency: selectedCurrency },
         timeout: 15000,
       });
 
-      toast.success(`${getCurrencySymbol()}${amount} ${selectedCurrency} donated!`);
+      // Store donation details for success modal
+      setLastDonation({
+        project: selectedProject,
+        amount: amount,
+        currency: selectedCurrency,
+        symbol: getCurrencySymbol()
+      });
+
+      // Show success modal
+      setShowSuccessModal(true);
+
+      // Also show toast
+      toast.success("Donation Successful!", {
+        description: `Thank you for your generous donation to ${selectedProject}!`,
+        duration: 5000,
+      });
+
+      // Reset form
       setSelectedProject("");
       setAmount("");
-    } catch (err: any) {
+      
+    } catch (err) {
       console.error("Donation error:", err);
-      toast.error(err.response?.data?.message || "Donation failed");
+      toast.error("Donation Failed", {
+        description: err.response?.data?.message || "There was an error processing your donation",
+        duration: 5000,
+      });
     } finally {
       setDonating(false);
     }
@@ -115,6 +140,172 @@ const Donations = () => {
   };
 
   const selectedProj = projects.find((p) => p.name === selectedProject);
+
+  // Donation History View Component
+  const DonationHistoryView = () => {
+    const [donationHistory, setDonationHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(true);
+    const [historyError, setHistoryError] = useState(null);
+
+    useEffect(() => {
+      fetchDonationHistory();
+    }, []);
+
+    const fetchDonationHistory = async () => {
+      try {
+        setHistoryLoading(true);
+        setHistoryError(null);
+        
+        // Add safety check for the API config
+        if (!API_CONFIG.donations?.history?.url) {
+          throw new Error("Donation history endpoint not configured");
+        }
+        
+        const apiUrl = buildUrl(API_CONFIG.donations.history.url);
+        console.log("Fetching donation history:", apiUrl);
+
+        const { data } = await axios({
+          method: API_CONFIG.donations.history.method,
+          url: apiUrl,
+          timeout: 10000,
+        });
+
+        console.log("Donation history response:", data);
+        
+        // Transform the API response to match our expected format
+        const transformedHistory = transformDonationHistoryData(data);
+        setDonationHistory(transformedHistory);
+      } catch (err) {
+        console.error("Donation history fetch error:", err);
+        const errorMessage = err.message || "Failed to load donation history";
+        setHistoryError(errorMessage);
+        toast.error(errorMessage);
+        setDonationHistory([]);
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+
+    const transformDonationHistoryData = (apiData) => {
+      if (!apiData) return [];
+
+      let arr = [];
+      if (Array.isArray(apiData)) arr = apiData;
+      else if (apiData?.data && Array.isArray(apiData.data)) arr = apiData.data;
+      else if (apiData?.donations && Array.isArray(apiData.donations)) arr = apiData.donations;
+      else if (apiData?.results && Array.isArray(apiData.results)) arr = apiData.results;
+      else {
+        console.warn("Unknown donation history structure:", apiData);
+        return [];
+      }
+
+      return arr.map((donation, i) => ({
+        id: donation.id || donation._id || `donation-${i}`,
+        project_name: donation.project_name || donation.project?.name || donation.project_id || "Unknown Project",
+        amount: donation.amount || 0,
+        currency: donation.currency || "HBAR",
+        status: donation.status || "confirmed",
+        created_at: donation.created_at || donation.date || new Date().toISOString(),
+        transaction_id: donation.transaction_id || donation.tx_hash || `tx-${i}`
+      }));
+    };
+
+    if (historyLoading) {
+      return (
+        <div className="loading-spinner">
+          <div className="spinner" />
+          <p>Loading donation history...</p>
+        </div>
+      );
+    }
+
+    if (historyError && donationHistory.length === 0) {
+      return (
+        <div className="error-message">
+          <h3>Error</h3>
+          <p>{historyError}</p>
+          <button onClick={fetchDonationHistory} className="retry-button">
+            <RefreshCw size={16} />
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="donation-history-view">
+        <div className="donations-header">
+          <div>
+            <h1 className="donations-title">My Donations</h1>
+            <p className="donations-subtitle">Track and manage all your contributions</p>
+          </div>
+          <button 
+            className="make-donation-button" 
+            onClick={() => setView("donate")}
+          >
+            Make New Donation
+          </button>
+        </div>
+
+        {donationHistory.length === 0 ? (
+          <div className="empty-state">
+            <p>No donation history found</p>
+            <button 
+              className="make-donation-button" 
+              onClick={() => setView("donate")}
+            >
+              Make Your First Donation
+            </button>
+          </div>
+        ) : (
+          <div className="donations-table-wrapper">
+            <table className="donations-history-table">
+              <thead>
+                <tr>
+                  <th>Project Name</th>
+                  <th>Amount</th>
+                  <th>Currency</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Transaction ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                {donationHistory.map((donation) => (
+                  <tr key={donation.id}>
+                    <td className="project-name-cell">{donation.project_name}</td>
+                    <td className="amount-cell">
+                      {getCurrencySymbol()}{donation.amount}
+                    </td>
+                    <td className="currency-cell">{donation.currency}</td>
+                    <td className="date-cell">
+                      {new Date(donation.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${donation.status.toLowerCase()}`}>
+                        {donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="transaction-cell">
+                      {donation.transaction_id}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  if (view === "history") {
+    return <DonationHistoryView />;
+  }
 
   if (loading) {
     return (
@@ -145,10 +336,19 @@ const Donations = () => {
   return (
     <div className="donations-page">
       <div className="donations-header">
-        <h1 className="donations-title">Make a Donation</h1>
-        <p className="donations-subtitle">
-          Support verified social impact projects on Hedera
-        </p>
+        <div>
+          <h1 className="donations-title">Make a Donation</h1>
+          <p className="donations-subtitle">
+            Support verified social impact projects on Hedera
+          </p>
+        </div>
+        <button 
+          className="view-donations-button" 
+          onClick={() => setView("history")}
+        >
+          <Eye size={16} />
+          View My Donations
+        </button>
       </div>
 
       <div className="donations-content">
@@ -290,6 +490,54 @@ const Donations = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && lastDonation && (
+        <div className="dialog-overlay">
+          <div className="success-donation-dialog">
+            <div className="dialog-header success">
+              <div className="success-icon">🎉</div>
+              <h3 className="dialog-title">Donation Successful!</h3>
+              <p className="dialog-description">
+                Thank you for your generous contribution to {lastDonation.project}
+              </p>
+            </div>
+            
+            <div className="confirmation-details">
+              <div className="confirmation-row">
+                <span className="confirmation-label">Project:</span>
+                <span className="confirmation-value">{lastDonation.project}</span>
+              </div>
+              <div className="confirmation-row">
+                <span className="confirmation-label">Amount:</span>
+                <span className="confirmation-value">{lastDonation.symbol}{lastDonation.amount} {lastDonation.currency}</span>
+              </div>
+              <div className="confirmation-row">
+                <span className="confirmation-label">Status:</span>
+                <span className="confirmation-value success-status">Confirmed</span>
+              </div>
+            </div>
+
+            <div className="dialog-actions">
+              <button 
+                className="view-history-button" 
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  setView("history");
+                }}
+              >
+                View Donation History
+              </button>
+              <button 
+                className="close-button" 
+                onClick={() => setShowSuccessModal(false)}
+              >
+                Make Another Donation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
