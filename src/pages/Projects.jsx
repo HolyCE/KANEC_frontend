@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { gsap } from "gsap";
 import { Search, SlidersHorizontal, Users, TrendingUp, Eye, X } from "lucide-react";
-import { API_CONFIG, buildUrl } from "../api/config";
+import { API_CONFIG, API_BASE_URL } from "../api/config";
 import axios from "axios";
 import "./projects.css";
 
 const categories = [
   "All Projects",
+  "Environment",
   "Education",
   "Healthcare",
   "Women Empowerment",
@@ -15,23 +16,7 @@ const categories = [
   "Energy",
 ];
 
-// API service function
-const projectsAPI = {
-  getProjects: async () => {
-    try {
-      const response = await axios({
-        method: API_CONFIG.projects.list.method,
-        url: buildUrl(API_CONFIG.projects.list.url),
-      });
-      return response.data;
-    } catch (error) {
-      console.error("API Error:", error);
-      throw error;
-    }
-  }
-};
-
-const Services = () => {
+const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,9 +37,14 @@ const Services = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("Fetching projects from:", buildUrl(API_CONFIG.projects.list.url));
+      console.log("Fetching projects from:", `${API_BASE_URL}${API_CONFIG.projects.list.url}`);
       
-      const data = await projectsAPI.getProjects();
+      const response = await axios({
+        method: API_CONFIG.projects.list.method,
+        url: `${API_BASE_URL}${API_CONFIG.projects.list.url}`,
+      });
+      
+      const data = response.data;
       console.log("API Response:", data);
       
       // Transform API data to match component expectations
@@ -65,61 +55,46 @@ const Services = () => {
     } catch (err) {
       console.error("Error fetching projects:", err);
       setError("Failed to load projects. Please try again later.");
-      setProjects([]); // Ensure empty array on error
+      setProjects([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Data transformation function
+  // FIXED: Correct image URL construction
   const transformProjectsData = (apiData) => {
-    // Handle different possible API response structures
-    if (!apiData) return [];
-    
-    // If API returns array directly
-    if (Array.isArray(apiData)) {
-      return apiData.map(project => ({
-        id: project.id || project._id,
-        title: project.title || project.name || "Untitled Project",
-        description: project.description || "No description available",
-        category: project.category || project.type || "General",
-        image: project.image || project.image_url || project.cover_image || "/placeholder-image.jpg",
-        raised: project.raised || project.amount_raised || project.funds_raised || 0,
-        goal: project.goal || project.funding_goal || project.target_amount || 0,
-        backers: project.backers || project.donors_count || project.supporters || 0,
-      }));
+    if (!apiData || !Array.isArray(apiData)) {
+      console.warn("Unexpected API response structure:", apiData);
+      return [];
     }
     
-    // If API returns object with data property
-    if (apiData.data && Array.isArray(apiData.data)) {
-      return apiData.data.map(project => ({
-        id: project.id || project._id,
-        title: project.title || project.name || "Untitled Project",
+    return apiData.map(project => {
+      // Construct the correct image URL
+      let imageUrl;
+      if (project.image) {
+        // The API returns "/static/projects/filename.webp"
+        // We need to construct: "https://api.konasalti.com/kanec/static/projects/filename.webp"
+        imageUrl = `${API_BASE_URL}${project.image}`;
+        console.log(`Image URL for ${project.title}:`, imageUrl);
+      } else {
+        imageUrl = "/placeholder-image.jpg";
+      }
+      
+      return {
+        id: project.id,
+        title: project.title || "Untitled Project",
         description: project.description || "No description available",
-        category: project.category || project.type || "General",
-        image: project.image || project.image_url || project.cover_image || "/placeholder-image.jpg",
-        raised: project.raised || project.amount_raised || project.funds_raised || 0,
-        goal: project.goal || project.funding_goal || project.target_amount || 0,
-        backers: project.backers || project.donors_count || project.supporters || 0,
-      }));
-    }
-    
-    // If API returns object with results property
-    if (apiData.results && Array.isArray(apiData.results)) {
-      return apiData.results.map(project => ({
-        id: project.id || project._id,
-        title: project.title || project.name || "Untitled Project",
-        description: project.description || "No description available",
-        category: project.category || project.type || "General",
-        image: project.image || project.image_url || project.cover_image || "/placeholder-image.jpg",
-        raised: project.raised || project.amount_raised || project.funds_raised || 0,
-        goal: project.goal || project.funding_goal || project.target_amount || 0,
-        backers: project.backers || project.donors_count || project.supporters || 0,
-      }));
-    }
-    
-    console.warn("Unexpected API response structure:", apiData);
-    return [];
+        category: project.category || "General",
+        image: imageUrl,
+        raised: project.amount_raised || 0,
+        goal: project.target_amount || 0,
+        backers: project.backers_count || 0,
+        location: project.location || "Unknown",
+        verified: project.verified || false,
+        wallet_address: project.wallet_address,
+        created_at: project.created_at,
+      };
+    });
   };
 
   useEffect(() => {
@@ -167,7 +142,8 @@ const Services = () => {
   const searchedProjects = filteredProjects.filter(
     (p) =>
       p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      p.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.location?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sortedProjects = [...searchedProjects].sort((a, b) => {
@@ -178,6 +154,7 @@ const Services = () => {
     }
     if (sortBy === "raised") return (b.raised || 0) - (a.raised || 0);
     if (sortBy === "backers") return (b.backers || 0) - (a.backers || 0);
+    if (sortBy === "recent") return new Date(b.created_at) - new Date(a.created_at);
     return 0;
   });
 
@@ -186,17 +163,16 @@ const Services = () => {
     return Math.min(Math.round((raised / goal) * 100), 100);
   };
 
-  // Debug: Check what data we have
-  console.log("Current projects state:", projects);
-  console.log("Filtered projects:", filteredProjects);
-  console.log("Sorted projects:", sortedProjects);
+  const formatCurrency = (amount) => {
+    return `₦${parseInt(amount).toLocaleString()}`;
+  };
 
   if (loading) {
     return (
       <div className="services-container">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          Loading projects from API...
+          Loading projects...
         </div>
       </div>
     );
@@ -228,21 +204,43 @@ const Services = () => {
         </h1>
         <p className="services-subtitle">
           Browse verified social impact projects across Africa. Every donation is
-          tracked on blockchain.
+          tracked on blockchain for complete transparency.
         </p>
         
-        {/* Debug info - remove in production */}
-        <div style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
-          Showing {sortedProjects.length} projects from API
+        <div className="projects-stats">
+          <div className="stat-badge">
+            <strong>{projects.length}</strong> Active Projects
+          </div>
+          <div className="stat-badge">
+            <strong>{projects.filter(p => p.verified).length}</strong> Verified
+          </div>
         </div>
       </motion.div>
+
+      {/* Debug Info - Remove in production */}
+      {projects.length > 0 && (
+        <div style={{ 
+          background: '#f3f4f6', 
+          padding: '15px', 
+          borderRadius: '8px', 
+          margin: '15px 0',
+          fontSize: '12px',
+          border: '1px solid #e5e7eb'
+        }}>
+          <strong>Debug - First Project Image:</strong><br/>
+          URL: {projects[0].image}<br/>
+          <a href={projects[0].image} target="_blank" rel="noopener noreferrer">
+            Test Image Link
+          </a>
+        </div>
+      )}
 
       <div ref={controlsRef} className="services-controls">
         <div className="search-wrapper">
           <Search className="search-icon" size={18} />
           <input
             type="text"
-            placeholder="Search projects..."
+            placeholder="Search projects by title, description, or location..."
             className="search-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -250,7 +248,7 @@ const Services = () => {
         </div>
         <button className="filter-button" onClick={() => setShowFilters(!showFilters)}>
           <SlidersHorizontal size={18} />
-          Advanced Filters
+          Filters & Sort
         </button>
       </div>
 
@@ -263,7 +261,7 @@ const Services = () => {
         >
           <div className="filters-content">
             <div className="filter-header">
-              <h3>Sort by</h3>
+              <h3>Sort Projects</h3>
               <button onClick={() => setShowFilters(false)} className="close-filters">
                 <X size={18} />
               </button>
@@ -286,6 +284,12 @@ const Services = () => {
                 onClick={() => setSortBy("backers")}
               >
                 Most Backers
+              </button>
+              <button
+                className={`sort-option ${sortBy === "recent" ? "active" : ""}`}
+                onClick={() => setSortBy("recent")}
+              >
+                Most Recent
               </button>
             </div>
           </div>
@@ -313,8 +317,9 @@ const Services = () => {
         {sortedProjects.length === 0 ? (
           <div className="no-projects">
             <p>No projects found matching your criteria.</p>
-            <button onClick={fetchProjects} className="retry-button">
-              Refresh Projects
+            {searchQuery && <p>Try adjusting your search terms or browse all categories.</p>}
+            <button onClick={() => { setSearchQuery(''); setActiveCategory('All Projects'); }} className="retry-button">
+              View All Projects
             </button>
           </div>
         ) : (
@@ -336,20 +341,29 @@ const Services = () => {
                     alt={project.title}
                     className="project-image"
                     onError={(e) => {
-                      e.target.src = "/placeholder-image.jpg";
+                      console.error(`Failed to load image: ${project.image}`);
+                      e.target.src = "https://via.placeholder.com/400x250/22c55e/ffffff?text=Project+Image";
                     }}
+                    onLoad={() => console.log(`✅ Image loaded: ${project.image}`)}
                   />
                   <div className="project-category-badge">{project.category}</div>
+                  {project.verified && (
+                    <div className="verified-badge">Verified</div>
+                  )}
                 </div>
 
                 <div className="project-content">
                   <h3 className="project-title">{project.title}</h3>
                   <p className="project-description">{project.description}</p>
+                  
+                  <div className="project-location">
+                    <span>📍 {project.location}</span>
+                  </div>
 
                   <div className="project-progress">
                     <div className="progress-amounts">
-                      <span className="amount-raised">{project.raised.toLocaleString()} HBAR</span>
-                      <span className="amount-goal">of {project.goal.toLocaleString()} HBAR</span>
+                      <span className="amount-raised">{formatCurrency(project.raised)}</span>
+                      <span className="amount-goal">of {formatCurrency(project.goal)} goal</span>
                     </div>
                     <div className="progress-bar-container">
                       <motion.div
@@ -359,6 +373,7 @@ const Services = () => {
                         transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
                       />
                     </div>
+                    <div className="progress-percentage">{fundedPercentage}% funded</div>
                   </div>
 
                   <div className="project-stats">
@@ -389,4 +404,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default Projects;

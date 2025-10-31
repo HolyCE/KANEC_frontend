@@ -4,10 +4,12 @@ import { ArrowLeft, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { API_CONFIG, API_BASE_URL } from '../api/config';
+import { useAuth } from '../contexts/AuthContext'; // Add this import
 import './SignInPage.css';
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Add this hook
 
   const [isSignIn, setIsSignIn] = useState(true);
   const [email, setEmail] = useState('');
@@ -139,14 +141,30 @@ const SignInPage = () => {
         });
 
         console.log('Sign in successful - Response:', data);
-        sessionStorage.setItem('token', data.token);
-        sessionStorage.setItem('isAuthenticated', 'true');
+        
+        // In the handleSubmit function, after successful login:
+        console.log('Sign in successful - Response:', data);
+
+        // Use AuthContext login instead of direct sessionStorage
+        login(data.user, data.access_token);
         toast.success('Signed in successfully!');
 
-        const redirect = sessionStorage.getItem('redirectAfterLogin');
-        console.log('Redirect path:', redirect);
+        // Check for redirect path in localStorage first, then sessionStorage
+        const redirect = localStorage.getItem('redirectAfterLogin') || sessionStorage.getItem('redirectAfterLogin');
+        console.log('Redirect path found:', redirect);
+
+        // Clear redirect from both storages
+        localStorage.removeItem('redirectAfterLogin');
         sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirect && !['/signin', '/signup'].includes(redirect) ? redirect : '/dashboard');
+
+        // Determine where to redirect
+        let redirectTo = '/dashboard';
+        if (redirect && !['/signin', '/signup', '/verify-email'].includes(redirect)) {
+          redirectTo = redirect;
+        }
+
+        console.log('Redirecting to:', redirectTo);
+        navigate(redirectTo, { replace: true });
       } else {
         // SIGN UP
         console.log('Starting sign up process...');
@@ -179,7 +197,13 @@ const SignInPage = () => {
         if (data?.message?.toLowerCase().includes('success')) {
           console.log('Account created successfully with success message');
           toast.success('Account created successfully! Please verify your email.');
-          setIsSignIn(true);
+          
+          // Redirect to verification page with email
+          navigate('/verify-email', { 
+            state: { email: email.trim().toLowerCase() } 
+          });
+          
+          // Clear form
           setName('');
           setEmail('');
           setPassword('');
@@ -195,6 +219,12 @@ const SignInPage = () => {
         } else {
           console.log('Account created with generic message');
           toast.success('Account created! Check your email for verification.');
+          
+          // Redirect to verification page with email
+          navigate('/verify-email', { 
+            state: { email: email.trim().toLowerCase() } 
+          });
+          
           setIsSignIn(true);
         }
       }

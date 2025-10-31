@@ -22,3 +22,23 @@
   width: 100%;
   height: 300px;
 }
+
+.no-chart-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.no-chart-data p {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.no-chart-data small {
+  font-size: 14px;
+  color: #9ca3af;
+}

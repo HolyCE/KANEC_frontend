@@ -1,15 +1,6 @@
-import { LucideIcon } from 'lucide-react';
 import './StatsCard.css';
 
-interface StatsCardProps {
-  title: string;
-  value: string;
-  change?: string;
-  icon: LucideIcon;
-  color: string;
-}
-
-const StatsCard = ({ title, value, change, icon: Icon, color }: StatsCardProps) => {
+const StatsCard = ({ title, value, change, icon: Icon, color }) => {
   return (
     <div className="stats-card">
       <div className="stats-header">

@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   MapPin,
   CheckCircle,
   TrendingUp,
   Sparkles,
   RefreshCw,
-} from "lucide-react";
-import { API_CONFIG, buildUrl } from "../../api/config";
-import axios from "axios";
-import "./Projects.css";
+} from 'lucide-react';
+import { API_CONFIG, API_BASE_URL } from '../../api/config';
+import axios from 'axios';
+import './Projects.css';
 
 const ProjectsPage = () => {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [error, setError] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchProjects();
@@ -26,8 +26,8 @@ const ProjectsPage = () => {
       setLoading(true);
       setError(null);
 
-      const apiUrl = buildUrl(API_CONFIG.projects.list.url);
-      console.log("Fetching projects from:", apiUrl);
+      const apiUrl = `${API_BASE_URL}${API_CONFIG.projects.list.url}`;
+      console.log('Fetching projects from:', apiUrl);
 
       const response = await axios({
         method: API_CONFIG.projects.list.method,
@@ -35,19 +35,19 @@ const ProjectsPage = () => {
         timeout: 10000,
       });
 
-      console.log("API response:", response.data);
+      console.log('API response:', response.data);
 
       if (!response.data) {
-        console.warn("API returned empty data");
+        console.warn('API returned empty data');
         setProjects([]);
         return;
       }
 
       const transformed = transformProjectsData(response.data);
-      console.log("Transformed projects:", transformed);
+      console.log('Transformed projects:', transformed);
       setProjects(transformed);
-    } catch (err: any) {
-      console.error("API error:", err);
+    } catch (err) {
+      console.error('API error:', err);
       setError(`Failed to load projects: ${err.message}`);
       setProjects([]);
     } finally {
@@ -55,88 +55,93 @@ const ProjectsPage = () => {
     }
   };
 
-  const transformProjectsData = (apiData: any): any[] => {
-    if (!apiData) return [];
+  const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
-    let projectsArray: any[] = [];
+    const transformProjectsData = (apiData) => {
+      if (!apiData) return [];
 
-    if (Array.isArray(apiData)) {
-      projectsArray = apiData;
-    } else if (apiData.data && Array.isArray(apiData.data)) {
-      projectsArray = apiData.data;
-    } else if (apiData.results && Array.isArray(apiData.results)) {
-      projectsArray = apiData.results;
-    } else if (apiData.projects && Array.isArray(apiData.projects)) {
-      projectsArray = apiData.projects;
-    } else {
-      console.warn("Unknown API response structure:", apiData);
-      return [];
-    }
+      let projectsArray = [];
 
-    return projectsArray.map((project, idx) => ({
-      id: project.id || project._id || `project-${idx}`,
-      title: project.title || project.name || "Untitled Project",
-      description:
-        project.description || project.summary || "No description available",
-      category:
-        project.category ||
-        project.type ||
-        project.tags?.[0] ||
-        "General",
-      image:
-        project.image ||
-        project.image_url ||
-        project.cover_image ||
-        project.thumbnail ||
-        "/placeholder-image.jpg",
-      raised:
-        Number(project.raised) ||
-        Number(project.amount_raised) ||
-        Number(project.funds_raised) ||
-        Number(project.current_funding) ||
-        0,
-      goal:
-        Number(project.goal) ||
-        Number(project.funding_goal) ||
-        Number(project.target_amount) ||
-        Number(project.target_funding) ||
-        1000,
-      location:
-        project.location || project.country || project.region || "Africa",
-      verified: Boolean(
-        project.verified ||
-          project.is_verified ||
-          project.verified_status ||
-          true
-      ),
-      trending: Boolean(project.trending || project.is_trending || false),
-      new: Boolean(
-        project.new ||
-          project.is_new ||
-          project.recently_added ||
-          false
-      ),
-    }));
-  };
+      if (Array.isArray(apiData)) {
+        projectsArray = apiData;
+      } else if (apiData.data && Array.isArray(apiData.data)) {
+        projectsArray = apiData.data;
+      } else if (apiData.results && Array.isArray(apiData.results)) {
+        projectsArray = apiData.results;
+      } else if (apiData.projects && Array.isArray(apiData.projects)) {
+        projectsArray = apiData.projects;
+      } else {
+        console.warn('Unknown API response structure:', apiData);
+        return [];
+      }
+
+        return projectsArray.map((project, idx) => {
+          const projectId = project.id || project._id;
+          let imageUrl = '/placeholder-image.jpg';
+          
+          if (project.image) {
+            // If image is a path like "/projects/{id}/image", build full URL with API prefix
+            if (project.image.startsWith('/')) {
+              // Check if it already has the API prefix
+              if (project.image.startsWith('/api/v1/')) {
+                imageUrl = `${API_BASE_URL}${project.image}`;
+              } else {
+                // Add the missing API prefix
+                imageUrl = `${API_BASE_URL}/api/v1${project.image}`;
+              }
+            } 
+            // If it's already a full URL, use it directly
+            else if (project.image.startsWith('http')) {
+              imageUrl = project.image;
+            }
+          } else {
+            // If no image field but we have project ID, construct the correct image URL
+            if (projectId) {
+              imageUrl = `${API_BASE_URL}/api/v1/projects/${projectId}/image`;
+            }
+          }
+
+        return {
+          id: project.id || project._id || `project-${idx}`,
+          title: project.title || project.name || 'Untitled Project',
+          description: project.description || project.summary || 'No description available',
+          category: project.category || project.type || project.tags?.[0] || 'General',
+          image: imageUrl,
+          // Use the new API field names
+          raised: Number(project.amount_raised) || Number(project.raised) || 0,
+          goal: Number(project.target_amount) || Number(project.goal) || 1000,
+          location: project.location || project.country || project.region || 'Africa',
+          verified: Boolean(project.verified || project.is_verified || true),
+          // Calculate trending based on backers count
+          trending: Boolean(project.backers_count > 10 || project.trending || false),
+          // Calculate new based on creation date (projects created in last 7 days)
+          new: Boolean(
+            project.created_at && 
+            new Date(project.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          ),
+          backers_count: project.backers_count || 0,
+          wallet_address: project.wallet_address || '',
+          created_at: project.created_at || new Date().toISOString(),
+          updated_at: project.updated_at || new Date().toISOString(),
+        };
+      });
+    };
 
   const filteredProjects = projects.filter((project) => {
-    const matchesCategory =
-      categoryFilter === "all" || project.category === categoryFilter;
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "verified" && project.verified) ||
-      (statusFilter === "trending" && project.trending) ||
-      (statusFilter === "new" && project.new);
+    const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter;
+    const matchesStatus = statusFilter === 'all' ||
+      (statusFilter === 'verified' && project.verified) ||
+      (statusFilter === 'trending' && project.trending) ||
+      (statusFilter === 'new' && project.new);
     return matchesCategory && matchesStatus;
   });
 
-  const calculateProgress = (raised: number, goal: number) =>
-    Math.min(Math.round((raised / goal) * 100), 100);
+  const calculateProgress = (raised, goal) => Math.min(Math.round((raised / goal) * 100), 100);
 
-  const categories = [
-    "all",
-    ...new Set(projects.map((p) => p.category).filter(Boolean)),
-  ];
+  const categories = ['all', ...new Set(projects.map((p) => p.category).filter(Boolean))];
 
   /* ------------------------------------------------------------------ */
   /* -------------------------- UI RENDERING -------------------------- */
@@ -189,7 +194,7 @@ const ProjectsPage = () => {
           >
             <option value="all">All Categories</option>
             {categories
-              .filter((c) => c !== "all")
+              .filter((c) => c !== 'all')
               .map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
@@ -200,36 +205,24 @@ const ProjectsPage = () => {
 
         <div className="filter-right">
           <button
-            className={`status-badge verified ${
-              statusFilter === "verified" ? "active" : ""
-            }`}
-            onClick={() =>
-              setStatusFilter(statusFilter === "verified" ? "all" : "verified")
-            }
+            className={`status-badge verified ${statusFilter === 'verified' ? 'active' : ''}`}
+            onClick={() => setStatusFilter(statusFilter === 'verified' ? 'all' : 'verified')}
           >
             <CheckCircle size={14} />
             Verified
           </button>
 
           <button
-            className={`status-badge trending ${
-              statusFilter === "trending" ? "active" : ""
-            }`}
-            onClick={() =>
-              setStatusFilter(statusFilter === "trending" ? "all" : "trending")
-            }
+            className={`status-badge trending ${statusFilter === 'trending' ? 'active' : ''}`}
+            onClick={() => setStatusFilter(statusFilter === 'trending' ? 'all' : 'trending')}
           >
             <TrendingUp size={14} />
             Trending
           </button>
 
           <button
-            className={`status-badge new ${
-              statusFilter === "new" ? "active" : ""
-            }`}
-            onClick={() =>
-              setStatusFilter(statusFilter === "new" ? "all" : "new")
-            }
+            className={`status-badge new ${statusFilter === 'new' ? 'active' : ''}`}
+            onClick={() => setStatusFilter(statusFilter === 'new' ? 'all' : 'new')}
           >
             <Sparkles size={14} />
             New
@@ -247,8 +240,8 @@ const ProjectsPage = () => {
             <h3>No Projects Found</h3>
             <p>
               {projects.length === 0
-                ? "There are no projects in the system yet. Check back later for new projects!"
-                : "No projects match your current filters. Try adjusting your criteria."}
+                ? 'There are no projects in the system yet. Check back later for new projects!'
+                : 'No projects match your current filters. Try adjusting your criteria.'}
             </p>
             <button onClick={fetchProjects} className="retry-button">
               <RefreshCw size={16} />
@@ -264,8 +257,7 @@ const ProjectsPage = () => {
                   alt={project.title}
                   className="project-image"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "/placeholder-image.jpg";
+                    e.target.src = '/placeholder-image.jpg';
                   }}
                 />
                 {project.verified && (
@@ -315,10 +307,7 @@ const ProjectsPage = () => {
                     <div
                       className="progress-fill"
                       style={{
-                        width: `${calculateProgress(
-                          project.raised,
-                          project.goal
-                        )}%`,
+                        width: `${calculateProgress(project.raised, project.goal)}%`,
                       }}
                     />
                   </div>

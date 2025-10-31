@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -17,13 +17,41 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
-import { useTheme } from './ThemeContext'; // Import the hook
+import { useTheme } from './ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { API_CONFIG, API_BASE_URL } from '../../api/config';
+import axios from 'axios';
 import './DashboardLayout.css';
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hbarBalance, setHbarBalance] = useState('0.00');
+  const [balanceLoading, setBalanceLoading] = useState(true);
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme(); // Use the theme context
+  const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+
+  // Fetch HBAR balance
+  useEffect(() => {
+    fetchHbarBalance();
+  }, []);
+
+  const fetchHbarBalance = async () => {
+    try {
+      const { data } = await axios({
+        method: API_CONFIG.p2p.balance.method,
+        url: `${API_BASE_URL}${API_CONFIG.p2p.balance.url}`,
+      });
+      
+      // Use the balance_hbar field from the response
+      setHbarBalance(data.balance_hbar?.toLocaleString() || '0.00');
+    } catch (error) {
+      console.error('Failed to fetch HBAR balance:', error);
+      setHbarBalance('0.00'); // Fallback
+    } finally {
+      setBalanceLoading(false);
+    }
+  };
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -36,8 +64,18 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     console.log('Logging out...');
-    sessionStorage.clear(); // removes all session data
+    logout();
     navigate("/signin");
+  };
+
+  const getUserInitials = () => {
+    if (!user?.name) return 'U';
+    return user.name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -94,15 +132,17 @@ const DashboardLayout = () => {
             </div>
             <div className="balance-info">
               <div className="balance-label">HBAR Balance</div>
-              <div className="balance-amount">1,250.50</div>
+              <div className="balance-amount">
+                {balanceLoading ? 'Loading...' : hbarBalance}
+              </div>
             </div>
           </div>
 
           <div className="user-profile">
-            <div className="user-avatar">JP</div>
+            <div className="user-avatar">{getUserInitials()}</div>
             <div className="user-info">
-              <div className="user-name">James Passaquindici</div>
-              <div className="user-handle">@jamec3</div>
+              <div className="user-name">{user?.name || 'User'}</div>
+              <div className="user-handle">@{user?.email?.split('@')[0] || 'user'}</div>
             </div>
           </div>
 
@@ -130,7 +170,6 @@ const DashboardLayout = () => {
           </div>
 
           <div className="header-actions">
-            {/* Theme Toggle in Header for mobile */}
             <button 
               className="theme-toggle-header"
               onClick={toggleTheme}
@@ -144,13 +183,10 @@ const DashboardLayout = () => {
             </button>
             <div className="wallet-address">
               <Wallet size={16} className="wallet-icon" />
-              <span>0xA3D...F98</span>
+              <span>{user?.wallet_address}</span>
             </div>
-            <button className="notification-badge">
-              <Bell size={18} />
-              <span className="badge">3</span>
-            </button>
-            <div className="user-avatar-small">JP</div>
+            {/* Remove notification badge since no endpoint exists */}
+            <div className="user-avatar-small">{getUserInitials()}</div>
           </div>
         </header>
 

@@ -13,18 +13,21 @@ import Vision from './newcomponents/Vision';
 import Footer from './newcomponents/Footer';
 
 // Pages
-import ProjectsPage from './pages/Projects';
+import ProjectsPage from './pages/dashboard/ProjectsPage';
 import SignInPage from './pages/SignInPage';
+import VerificationPage from './pages/VerificationPage'; // Add this import
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 import DashboardProjects from './pages/dashboard/ProjectsPage';
 import Donations from './pages/dashboard/Donations';
 import AIInsights from './pages/dashboard/AIInsights';
 import Reports from './pages/dashboard/Reports';
-import Settings from './pages/dashboard/Settings';
+import Settings from './pages/dashboard/Settings.jsx';
 
-// Theme Context
+// Context Providers
 import { ThemeProvider } from './pages/dashboard/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Placeholder components
 const Login = () => <h2 style={{ textAlign: 'center', marginTop: '100px' }}>Login Page</h2>;
@@ -32,7 +35,7 @@ const Login = () => <h2 style={{ textAlign: 'center', marginTop: '100px' }}>Logi
 // Wrapper component to add space for fixed navbar
 const PageWrapper = ({ children }) => {
   return (
-    <div style={{ paddingTop: '80px' }}> {/* Adjust this value based on your navbar height */}
+    <div style={{ paddingTop: '80px' }}>
       {children}
     </div>
   );
@@ -42,9 +45,10 @@ const AppContent = () => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isSignInRoute = location.pathname === '/signin' || location.pathname === '/login';
+  const isVerificationRoute = location.pathname === '/verify-email'; // Add this
 
-  // Show Navbar and Footer on all pages except SignIn/Login and Dashboard
-  const showLayout = !isDashboardRoute && !isSignInRoute;
+  // Show Navbar and Footer on all pages except SignIn/Login, Dashboard, and Verification
+  const showLayout = !isDashboardRoute && !isSignInRoute && !isVerificationRoute;
 
   return (
     <>
@@ -94,13 +98,18 @@ const AppContent = () => {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Dashboard Routes (no navbar/footer) - ThemeProvider wraps only dashboard routes */}
+        {/* Verification Page - Add this as a top-level route */}
+        <Route path="/verify-email" element={<VerificationPage />} />
+
+        {/* Dashboard Routes (no navbar/footer) - Protected with AuthProvider */}
         <Route 
           path="/dashboard" 
           element={
-            <ThemeProvider>
-              <DashboardLayout />
-            </ThemeProvider>
+            <ProtectedRoute>
+              <ThemeProvider>
+                <DashboardLayout />
+              </ThemeProvider>
+            </ProtectedRoute>
           }
         >
           <Route index element={<Dashboard />} />
@@ -117,9 +126,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 };
 
