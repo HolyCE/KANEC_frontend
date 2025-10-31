@@ -17,11 +17,11 @@ const Hero = () => {
             <span>Kanec Impact Transparency Ledger</span>
           </div>
           
-          <h1 className="hero-title">
+          <h1 className="heroes-title">
             Fund Verified African Impact. <span className="highlight">Guaranteed by Hedera.</span>
           </h1>
           
-          <p className="hero-description">
+          <p className="heroes-description">
             With <strong>Kanec Impact Ledger</strong>, donors see every dollar flow in real time ensuring funds reach verified African project projects without corruption.
           </p>
           

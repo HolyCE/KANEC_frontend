@@ -32,10 +32,10 @@
   font-weight: 500;
 }
 
-.hero-title {
+.heroes-title {
   font-size: 3rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.1 ;
   color: hsl(var(--foreground));
   margin: 0;
 }
@@ -44,10 +44,10 @@
   color: hsl(var(--accent));
 }
 
-.hero-description {
-  font-size: 1.1rem;
+.heroes-description {
+  font-size: 1rem !important;
   line-height: 1.6;
-  color: hsl(var(--muted-foreground));
+  color: #000000 !important;
   margin: 0;
 }
 
