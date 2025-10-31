@@ -14,6 +14,7 @@ import Footer from './newcomponents/Footer';
 
 // Pages
 import ProjectsPage from './pages/Projects';
+import About from './pages/About';
 import SignInPage from './pages/SignInPage';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -65,6 +66,17 @@ const AppContent = () => {
               <Vision />
               <Footer />
             </>
+          }
+        />
+
+        {/* About Page */}
+        <Route
+          path="/about"
+          element={
+            <PageWrapper>
+              <About />
+              <Footer />
+            </PageWrapper>
           }
         />
 
