@@ -210,7 +210,7 @@
 
 .team-image-wrapper {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 0.9;
   border-radius: 1rem;
   overflow: hidden;
   margin-bottom: 1.5rem;
@@ -221,7 +221,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 40%; /* Adjust this value until heads are visible */
 }
+
 
 .team-name {
   font-size: 1.125rem;

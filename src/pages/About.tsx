@@ -7,32 +7,32 @@ const About = () => {
     {
       name: "Elizabeth Okokon",
       role: "PROJECT MANAGER / HEDERA DEVELOPER",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop"
+      image: "/kanecteam6.jpg"
     },
     {
       name: "Akinrogunde Omomijudeoluwa",
       role: "BACKEND & BLOCKCHAIN DEVELOPER",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+      image: "/kanecteam1.jpg"
     },
     {
       name: "Eze kelechi Joseph",
       role: "FRONTEND DEVELOPER",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop"
+      image: "/hue2.png"
     },
     {
       name: "Esimke Chisom Emmanuel",
       role: "FRONTEND DEVELOPER",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop"
+      image: "mrchi.jpg"
     },
     {
       name: "Olise Oseyenum Kenneth",
       role: "UI/UX DESIGNER",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
+      image: "/kanecteam2.jpg"
     },
     {
-      name: "Ayomikun Oluwatobiloba",
-      role: "AI/ML ENGINEER",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
+      name: "Isaac Ugwu Chinenye",
+      role: "BACKEND & BLOCKCHAIN DEVELOPER",
+      image: "/kanecteam3.jpg"
     }
   ];
 
