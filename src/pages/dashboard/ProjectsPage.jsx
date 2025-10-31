@@ -289,8 +289,8 @@ const ProjectsPage = () => {
   </div>
   <div className="project-funding">
     <div className="funding-amounts">
-      <span className="amount-raised">₦{project.raised.toLocaleString()}</span>
-      <span className="amount-goal">of ₦{project.goal.toLocaleString()}</span>
+      <span className="amount-raised">ℏ{project.raised.toLocaleString()}</span>
+      <span className="amount-goal">of ℏ{project.goal.toLocaleString()}</span>
     </div>
     <div className="progress-bar">
       <div

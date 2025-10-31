@@ -84,7 +84,7 @@ const Reports = () => {
             <span className="stat-label">Funds Disbursed</span>
             <Wallet size={18} className="stat-icon yellow" />
           </div>
-          <h3 className="stat-value">₦3.2M</h3>
+          <h3 className="stat-value">ℏ3.2M</h3>
           <p className="stat-trend positive">↑12% this month</p>
         </div>
 
@@ -200,7 +200,7 @@ const Reports = () => {
             </div>
             <div className="legend-item">
               <span className="legend-dot funds"></span>
-              <span>Funds ₦</span>
+              <span>Funds ℏ</span>
             </div>
           </div>
         </div>

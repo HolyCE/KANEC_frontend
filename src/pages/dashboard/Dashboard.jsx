@@ -72,7 +72,7 @@ const Dashboard = () => {
   };
 
   const formatCurrency = (amount) => {
-    return `₦${parseInt(amount).toLocaleString()}`;
+    return `ℏ${parseInt(amount).toLocaleString()}`;
   };
 
   const formatDonationData = (donation) => ({
@@ -85,11 +85,11 @@ const Dashboard = () => {
 
   const getImpactMessage = () => {
     if (!dashboardData.insights?.user_impact_score) {
-      return `₦${dashboardData.totalDonations.toLocaleString()} donated to ${dashboardData.projectsSupported} projects`;
+      return `ℏ${dashboardData.totalDonations.toLocaleString()} donated to ${dashboardData.projectsSupported} projects`;
     }
     
     const score = dashboardData.insights.user_impact_score;
-    return `₦${dashboardData.totalDonations.toLocaleString()} donated to ${dashboardData.projectsSupported} projects • ${score.level} Impact Level`;
+    return `ℏ${dashboardData.totalDonations.toLocaleString()} donated to ${dashboardData.projectsSupported} projects • ${score.level} Impact Level`;
   };
 
   const getDefaultRecommendations = (projects) => {
