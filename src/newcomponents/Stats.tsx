@@ -10,7 +10,7 @@ const Stats = () => {
   });
 
   const stats = [
-    { target: 5248, label: 'Trained Donors' },
+    { target: 5248, label: 'Donors' },
     { target: 187, label: 'Verified Projects' },
     { target: 96, label: 'Communities Impacted' },
   ];
