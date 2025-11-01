@@ -8,14 +8,11 @@ import {
 import { toast } from "sonner";
 import { API_CONFIG, buildUrl } from "../../api/config";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ← ADDED
 import "./Donations.css";
 
 const currencies = [{ code: "HBAR", name: "Hedera HBAR", symbol: "ℏ" }];
 
 const Donations = () => {
-  const navigate = useNavigate(); // ← ADDED
-
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,6 +21,8 @@ const Donations = () => {
   const [selectedCurrency, setSelectedCurrency] = useState("HBAR");
   const [donating, setDonating] = useState(false);
   const [view, setView] = useState("donate");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [lastDonation, setLastDonation] = useState(null);
 
   const walletAddress = "0xA3D...F98";
   const transactionFee = "~0.0001 HBAR";
@@ -87,16 +86,52 @@ const Donations = () => {
     }));
   };
 
-  // NEW: Navigate to donation modal
-  const handleConfirm = () => {
+  const handleDonate = async () => {
     if (!selectedProject) return toast.error("Select a project");
     if (!amount || Number(amount) <= 0) return toast.error("Enter valid amount");
 
-    const proj = projects.find((p) => p.name === selectedProject);
-    if (!proj) return toast.error("Project not found");
+    setDonating(true);
+    try {
+      const proj = projects.find((p) => p.name === selectedProject);
+      if (!proj) return toast.error("Project not found");
 
-    // Navigate to modal with project ID and amount
-    navigate(`/dashboard/donate?project=${proj.id}&amount=${amount}`);
+      const response = await axios({
+        method: API_CONFIG.donations.make.method,
+        url: buildUrl(API_CONFIG.donations.make.url),
+        data: { project_id: proj.id, amount: Number(amount), currency: selectedCurrency },
+        timeout: 15000,
+      });
+
+      // Store donation details for success modal
+      setLastDonation({
+        project: selectedProject,
+        amount: amount,
+        currency: selectedCurrency,
+        symbol: getCurrencySymbol()
+      });
+
+      // Show success modal
+      setShowSuccessModal(true);
+
+      // Also show toast
+      toast.success("Donation Successful!", {
+        description: `Thank you for your generous donation to ${selectedProject}!`,
+        duration: 5000,
+      });
+
+      // Reset form
+      setSelectedProject("");
+      setAmount("");
+      
+    } catch (err) {
+      console.error("Donation error:", err);
+      toast.error("Donation Failed", {
+        description: err.response?.data?.message || "There was an error processing your donation",
+        duration: 5000,
+      });
+    } finally {
+      setDonating(false);
+    }
   };
 
   const getCurrencySymbol = () => {
@@ -121,6 +156,7 @@ const Donations = () => {
         setHistoryLoading(true);
         setHistoryError(null);
         
+        // Add safety check for the API config
         if (!API_CONFIG.donations?.history?.url) {
           throw new Error("Donation history endpoint not configured");
         }
@@ -136,6 +172,7 @@ const Donations = () => {
 
         console.log("Donation history response:", data);
         
+        // Transform the API response to match our expected format
         const transformedHistory = transformDonationHistoryData(data);
         setDonationHistory(transformedHistory);
       } catch (err) {
@@ -435,10 +472,9 @@ const Donations = () => {
               </div>
             </div>
 
-            {/* UPDATED BUTTON */}
             <button
               className="donate-button"
-              onClick={handleConfirm}
+              onClick={handleDonate}
               disabled={!selectedProject || !amount || Number(amount) <= 0 || donating}
             >
               <Wallet size={18} />
@@ -455,7 +491,53 @@ const Donations = () => {
         </div>
       </div>
 
-      {/* REMOVED OLD SUCCESS MODAL */}
+      {/* Success Modal */}
+      {showSuccessModal && lastDonation && (
+        <div className="dialog-overlay">
+          <div className="success-donation-dialog">
+            <div className="dialog-header success">
+              <div className="success-icon">🎉</div>
+              <h3 className="dialog-title">Donation Successful!</h3>
+              <p className="dialog-description">
+                Thank you for your generous contribution to {lastDonation.project}
+              </p>
+            </div>
+            
+            <div className="confirmation-details">
+              <div className="confirmation-row">
+                <span className="confirmation-label">Project:</span>
+                <span className="confirmation-value">{lastDonation.project}</span>
+              </div>
+              <div className="confirmation-row">
+                <span className="confirmation-label">Amount:</span>
+                <span className="confirmation-value">{lastDonation.symbol}{lastDonation.amount} {lastDonation.currency}</span>
+              </div>
+              <div className="confirmation-row">
+                <span className="confirmation-label">Status:</span>
+                <span className="confirmation-value success-status">Confirmed</span>
+              </div>
+            </div>
+
+            <div className="dialog-actions">
+              <button 
+                className="view-history-button" 
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  setView("history");
+                }}
+              >
+                View Donation History
+              </button>
+              <button 
+                className="close-button" 
+                onClick={() => setShowSuccessModal(false)}
+              >
+                Make Another Donation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
