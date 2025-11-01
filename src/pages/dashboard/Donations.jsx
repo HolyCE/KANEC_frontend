@@ -204,8 +204,8 @@ const Donations = () => {
         project_name: donation.project_name || donation.project?.name || donation.project_id || "Unknown Project",
         amount: donation.amount || 0,
         currency: donation.currency || "HBAR",
-        status: donation.status || "confirmed",
-        created_at: donation.created_at || donation.date || new Date().toISOString(),
+        status: donation.status || "completed",
+        created_at: donation.donated_at || donation.created_at || donation.date || new Date().toISOString(),
         transaction_id: donation.transaction_id || donation.tx_hash || `tx-${i}`
       }));
     };
