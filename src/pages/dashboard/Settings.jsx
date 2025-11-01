@@ -283,7 +283,7 @@ const Settings = () => {
               <div className="wallet-detail">
                 <span className="wallet-label">Connected Wallet</span>
                 <span className="wallet-address">
-                  {user?.wallet_address ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}` : 'Not connected'}
+                  {user?.wallet_address ? `${user.wallet_address}` : 'Not connected'}
                 </span>
               </div>
               <button 
@@ -292,6 +292,7 @@ const Settings = () => {
                 disabled={!user?.wallet_address}
               >
                 Disconnect
+                <p className='page-subtitle'>coming soon</p>
               </button>
             </div>
 
