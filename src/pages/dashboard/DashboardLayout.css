@@ -60,6 +60,7 @@
   padding: 6px;
   border-radius: 6px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .theme-toggle-header:hover {
@@ -370,20 +371,27 @@
 .current-page-container {
   flex: 1;
   margin-left: 1rem;
+  display: flex;
+  align-items: center;
 }
 
 .current-page-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text);
+  color: hsl(var(--foreground));
   margin: 0;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .current-page-title {
     font-size: 1.25rem;
+    max-width: 200px;
   }
   
   .current-page-container {
@@ -394,6 +402,15 @@
 @media (max-width: 480px) {
   .current-page-title {
     font-size: 1.1rem;
+    max-width: 150px;
+  }
+
+  .dashboard-header {
+    padding: 0 12px;
+  }
+
+  .header-actions {
+    gap: 6px;
   }
 }
 
@@ -450,8 +467,10 @@
   margin-left: 240px;
   display: flex;
   flex-direction: column;
-  background: hsl(var(--background)); /* Use CSS variable */
+  background: hsl(var(--background));
   animation: mainContentSlide 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  /* Add overflow for proper scrolling */
+  overflow: hidden;
 }
 
 @keyframes mainContentSlide {
@@ -473,9 +492,18 @@
   align-items: center;
   padding: 0 24px;
   gap: 16px;
+  
   position: sticky;
   top: 0;
   z-index: 50;
+  
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  background: hsl(var(--card) / 0.95);
+  
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
   justify-content: space-between;
   animation: headerSlideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
 }
@@ -499,6 +527,7 @@
   cursor: pointer;
   padding: 4px;
   animation: bounceIn 0.6s ease 0.5s both;
+  flex-shrink: 0;
 }
 
 .search-container {
@@ -553,6 +582,7 @@
   align-items: center;
   gap: 12px;
   animation: actionsFadeIn 0.6s ease 0.7s both;
+  flex-shrink: 0;
 }
 
 @keyframes actionsFadeIn {
@@ -579,6 +609,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .network-btn:hover {
@@ -597,6 +628,11 @@
   font-size: 12px;
   font-weight: 600;
   color: hsl(var(--foreground));
+  flex-shrink: 0;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wallet-icon {
@@ -637,12 +673,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -5px;
   color: white;
   font-weight: 600;
   font-size: 11px;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .user-avatar-small:hover {
@@ -653,9 +689,12 @@
   flex: 1;
   padding: 24px;
   overflow-y: auto;
+  overflow-x: hidden;
   animation: contentReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
   color: hsl(var(--foreground));
   background: hsl(var(--background));
+  
+  height: calc(100vh - 64px);
 }
 
 @keyframes contentReveal {
@@ -997,6 +1036,9 @@
   .dashboard-header {
     padding: 0 16px;
     gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
 
   .header-actions {

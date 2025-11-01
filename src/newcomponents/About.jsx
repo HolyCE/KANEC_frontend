@@ -33,7 +33,7 @@ const About = () => {
     },
     {
       name: "Isaac Ugwu Chinenye",
-      role: "BACKEND & BLOCKCHAIN DEVELOPER",
+      role: "BACKEND DEVELOPER",
       image: "/ISAAC.jpeg"
     }
   ];
