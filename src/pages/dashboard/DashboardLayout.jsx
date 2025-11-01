@@ -44,10 +44,13 @@ const DashboardLayout = () => {
         url: `${API_BASE_URL}${API_CONFIG.p2p.balance.url}`,
       });
       
-      // Use the balance_hbar field from the response
       setHbarBalance(data.balance_hbar?.toLocaleString() || '0.00');
     } catch (error) {
       console.error('Failed to fetch HBAR balance:', error);
+      if (error.response?.status === 401) {
+        console.log('Balance fetch returned 401 - token might be invalid');
+        // Don't set balance, let the interceptor handle logout if needed
+      }
       setHbarBalance('0.00'); // Fallback
     } finally {
       setBalanceLoading(false);

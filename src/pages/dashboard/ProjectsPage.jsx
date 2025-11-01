@@ -279,13 +279,6 @@ const ProjectsPage = () => {
              <div className="project-card-content">
   <h3 className="project-card-title">{project.title}</h3>
   <p className="project-card-description">{project.description}</p>
-  <div className="project-meta">
-    <div className="project-location">
-      <MapPin size={14} />
-      <span>{project.location}</span>
-    </div>
-    <span className="project-category-badge">{project.category}</span>
-  </div>
   <div className="project-funding">
     <div className="funding-amounts">
       <span className="amount-raised">ℏ{project.raised.toLocaleString()}</span>

@@ -20,16 +20,29 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  // Check if token is expired
   const isTokenExpired = (token) => {
     try {
       if (!token) return true;
       
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      // More robust token parsing
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        console.log('❌ Invalid token format');
+        return true;
+      }
+      
+      const payload = JSON.parse(atob(parts[1]));
+      
+      // Check if we have expiration time
+      if (!payload.exp) {
+        console.log('❌ Token missing expiration time');
+        return true;
+      }
+      
       const isExpired = payload.exp * 1000 < Date.now();
       
       console.log('Token expiration check:', {
-        issued: new Date(payload.iat * 1000),
+        issued: payload.iat ? new Date(payload.iat * 1000) : 'No iat',
         expires: new Date(payload.exp * 1000),
         now: new Date(),
         isExpired
@@ -42,104 +55,99 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add axios interceptor for authentication
+  // Set up axios interceptor once on mount
   useEffect(() => {
-    const interceptor = axios.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token');
-      console.log('Axios request interceptor - Token present:', !!token);
-      
-      if (token && !isTokenExpired(token)) {
-        config.headers.Authorization = `Bearer ${token}`;
-        console.log('Added Authorization header with token');
-      } else if (token) {
-        console.log('Token expired, clearing...');
-        localStorage.removeItem('token');
-        localStorage.removeItem('isAuthenticated');
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+          // Only check expiration for non-auth endpoints
+          const isAuthEndpoint = config.url?.includes('/auth/');
+          if (!isAuthEndpoint && isTokenExpired(token)) {
+            console.log('❌ Token expired, logging out...');
+            logout();
+            return config; // Still send the request, let server handle 401
+          }
+          
+          config.headers.Authorization = `Bearer ${token}`;
+          console.log('✅ Added Authorization header to request:', config.url);
+        }
+        
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
-      return config;
-    });
+    );
 
+    // Cleanup interceptor on unmount
     return () => {
-      axios.interceptors.request.eject(interceptor);
+      axios.interceptors.request.eject(requestInterceptor);
     };
   }, []);
 
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      console.log('Auth check - Token from localStorage:', token ? 'Present' : 'Missing');
+      console.log('🔐 Auth check - Token from localStorage:', token ? 'Present' : 'Missing');
       
       if (!token) {
-        console.log('No token found');
+        console.log('❌ No token found');
         setLoading(false);
         return;
       }
 
-      if (isTokenExpired(token)) {
-        console.log('Token expired, clearing...');
-        localStorage.removeItem('token');
-        localStorage.removeItem('isAuthenticated');
-        setLoading(false);
-        return;
-      }
-
-      console.log('Making auth/me request...');
+      // Don't check expiration here - let the server decide
+      console.log('🔄 Making auth/me request...');
       
-      // Make the request with explicit headers to ensure token is sent
       const { data } = await axios({
         method: API_CONFIG.auth.me.method,
         url: `${API_BASE_URL}${API_CONFIG.auth.me.url}`,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
       });
 
-      console.log('Auth check successful, user data:', data);
+      console.log('✅ Auth check successful, user data:', data);
       setUser(data);
 
     } catch (error) {
-      console.error('Auth check failed:', error);
-      console.error('Error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers
-      });
-      
-      // Clear token on auth failure
-      localStorage.removeItem('token');
-      localStorage.removeItem('isAuthenticated');
-      sessionStorage.clear();
+      console.error('❌ Auth check failed:', error);
+      if (error.response?.status === 401) {
+        console.log('🔄 Server returned 401, logging out...');
+        logout();
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const login = (userData, token) => {
-    console.log('Login function called with:', { 
+    console.log('🔑 Login function called with:', { 
       userEmail: userData.email, 
-      tokenLength: token.length,
-      tokenPreview: token.substring(0, 20) + '...'
+      tokenLength: token?.length || 0,
     });
     
-    // Store token
+    // Store auth data
     localStorage.setItem('token', token);
     localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('userData', JSON.stringify(userData));
     
-    sessionStorage.setItem('token', token);
-    sessionStorage.setItem('isAuthenticated', 'true');
-    
+    // Set user state
     setUser(userData);
-    console.log('Login completed successfully');
+    
+    console.log('✅ Login completed successfully');
   };
 
   const logout = () => {
-    console.log('Logout initiated');
-    localStorage.clear();
+    console.log('🚪 Logout initiated');
+    
+    // Clear storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('isAuthenticated');
     sessionStorage.clear();
+    
+    // Reset user state
     setUser(null);
-    console.log('Logout completed');
+    
+    console.log('✅ Logout completed');
   };
 
   const value = {

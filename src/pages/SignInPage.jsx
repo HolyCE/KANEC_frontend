@@ -46,19 +46,6 @@ const SignInPage = () => {
     console.log('Session check:', { token: !!token, isAuth: !!isAuth });
   }, []);
 
-  // Add bearer token to all requests
-  useEffect(() => {
-    const interceptor = axios.interceptors.request.use((config) => {
-      const token = sessionStorage.getItem('token');
-      if (token) config.headers.Authorization = `Bearer ${token}`;
-      return config;
-    });
-    console.log('Axios interceptor added');
-    return () => {
-      axios.interceptors.request.eject(interceptor);
-      console.log('Axios interceptor removed');
-    };
-  }, []);
 
   // Password validation effect
   useEffect(() => {
@@ -153,6 +140,8 @@ const SignInPage = () => {
 
         localStorage.removeItem('redirectAfterLogin');
         sessionStorage.removeItem('redirectAfterLogin');
+
+        window.history.replaceState(null, '', '/');
 
         let redirectTo = '/dashboard';
         if (redirect && !['/signin', '/signup', '/verify-email'].includes(redirect)) {
