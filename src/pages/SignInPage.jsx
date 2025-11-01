@@ -119,7 +119,6 @@ const SignInPage = () => {
     try {
       if (isSignIn) {
         // SIGN IN
-        console.log('Starting sign in process...');
         const { data } = await axios({
           method: API_CONFIG.auth.login.method,
           url: `${API_BASE_URL}${API_CONFIG.auth.login.url}`,
@@ -135,10 +134,11 @@ const SignInPage = () => {
         login(data.user, data.access_token);
         toast.success('Signed in successfully!');
 
-        const redirect = localStorage.getItem('redirectAfterLogin') || sessionStorage.getItem('redirectAfterLogin');
+        // FIXED: Use sessionStorage only for redirect
+        const redirect = sessionStorage.getItem('redirectAfterLogin');
         console.log('Redirect path found:', redirect);
 
-        localStorage.removeItem('redirectAfterLogin');
+        // Clear the redirect path
         sessionStorage.removeItem('redirectAfterLogin');
 
         window.history.replaceState(null, '', '/');
@@ -150,7 +150,8 @@ const SignInPage = () => {
 
         console.log('Redirecting to:', redirectTo);
         navigate(redirectTo, { replace: true });
-      } else {
+          } 
+      else {
         // SIGN UP
         console.log('Starting sign up process...');
         const error = validateSignup();

@@ -43,15 +43,14 @@ const Dashboard = () => {
   }, [dashboardData.recommendations.length]);
 
   const handleRecommendationClick = (recommendation) => {
-    // Store the selected project in localStorage or state management
-    // so the donations page can pre-select it
+    // Use sessionStorage instead of localStorage
     const projectData = {
       name: recommendation.title,
       id: recommendation.id,
       category: recommendation.category
     };
     
-    localStorage.setItem('selectedProject', JSON.stringify(projectData));
+    sessionStorage.setItem('selectedProject', JSON.stringify(projectData));
     
     // Navigate to donations page
     navigate('/dashboard/donations');

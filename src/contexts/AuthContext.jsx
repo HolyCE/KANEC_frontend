@@ -1,3 +1,4 @@
+// src/contexts/AuthContext.jsx - UPDATED
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_CONFIG, API_BASE_URL } from '../api/config';
@@ -15,91 +16,30 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('auth_token'));
 
+  // Set up axios interceptor for token
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const isTokenExpired = (token) => {
-    try {
-      if (!token) return true;
-      
-      // More robust token parsing
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        console.log('❌ Invalid token format');
-        return true;
-      }
-      
-      const payload = JSON.parse(atob(parts[1]));
-      
-      // Check if we have expiration time
-      if (!payload.exp) {
-        console.log('❌ Token missing expiration time');
-        return true;
-      }
-      
-      const isExpired = payload.exp * 1000 < Date.now();
-      
-      console.log('Token expiration check:', {
-        issued: payload.iat ? new Date(payload.iat * 1000) : 'No iat',
-        expires: new Date(payload.exp * 1000),
-        now: new Date(),
-        isExpired
-      });
-      
-      return isExpired;
-    } catch (error) {
-      console.error('Error checking token expiration:', error);
-      return true;
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem('auth_token', token);
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+      localStorage.removeItem('auth_token');
     }
-  };
+  }, [token]);
 
-  // Set up axios interceptor once on mount
   useEffect(() => {
-    const requestInterceptor = axios.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem('token');
-        
-        if (token) {
-          // Only check expiration for non-auth endpoints
-          const isAuthEndpoint = config.url?.includes('/auth/');
-          if (!isAuthEndpoint && isTokenExpired(token)) {
-            console.log('❌ Token expired, logging out...');
-            logout();
-            return config; // Still send the request, let server handle 401
-          }
-          
-          config.headers.Authorization = `Bearer ${token}`;
-          console.log('✅ Added Authorization header to request:', config.url);
-        }
-        
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
-    // Cleanup interceptor on unmount
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-    };
-  }, []);
+    if (token) {
+      checkAuthStatus();
+    } else {
+      setLoading(false);
+    }
+  }, [token]);
 
   const checkAuthStatus = async () => {
     try {
-      const token = localStorage.getItem('token');
-      console.log('🔐 Auth check - Token from localStorage:', token ? 'Present' : 'Missing');
-      
-      if (!token) {
-        console.log('❌ No token found');
-        setLoading(false);
-        return;
-      }
-
-      // Don't check expiration here - let the server decide
-      console.log('🔄 Making auth/me request...');
+      console.log('🔐 Checking auth status with token...');
       
       const { data } = await axios({
         method: API_CONFIG.auth.me.method,
@@ -111,43 +51,49 @@ export const AuthProvider = ({ children }) => {
 
     } catch (error) {
       console.error('❌ Auth check failed:', error);
+      
       if (error.response?.status === 401) {
-        console.log('🔄 Server returned 401, logging out...');
-        logout();
+        console.log('🔄 Token invalid, clearing auth data');
+        clearAuthData();
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const login = (userData, token) => {
-    console.log('🔑 Login function called with:', { 
-      userEmail: userData.email, 
-      tokenLength: token?.length || 0,
-    });
-    
-    // Store auth data
-    localStorage.setItem('token', token);
-    localStorage.setItem('isAuthenticated', 'true');
-    
-    // Set user state
-    setUser(userData);
-    
-    console.log('✅ Login completed successfully');
+  const clearAuthData = () => {
+    setUser(null);
+    setToken(null);
+    delete axios.defaults.headers.common['Authorization'];
+    localStorage.removeItem('auth_token');
+    sessionStorage.clear();
   };
 
-  const logout = () => {
+  const login = (userData, accessToken = null) => {
+    console.log('🔑 Login function called with token:', !!accessToken);
+    
+    setUser(userData);
+    
+    if (accessToken) {
+      setToken(accessToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      localStorage.setItem('auth_token', accessToken);
+    }
+    
+    console.log('✅ Login completed with Authorization header');
+  };
+
+  const logout = async () => {
     console.log('🚪 Logout initiated');
     
-    // Clear storage
-    localStorage.removeItem('token');
-    localStorage.removeItem('isAuthenticated');
-    sessionStorage.clear();
-    
-    // Reset user state
-    setUser(null);
-    
-    console.log('✅ Logout completed');
+    try {
+      await axios.post(`${API_BASE_URL}/api/v1/auth/logout`);
+    } catch (error) {
+      console.log('Logout API call failed:', error);
+    } finally {
+      clearAuthData();
+      console.log('✅ Logout completed');
+    }
   };
 
   const value = {
@@ -155,7 +101,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && !!token,
+    token
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
