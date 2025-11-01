@@ -179,7 +179,7 @@ const Settings = () => {
 
           <div className="settings-form">
             <div className="form-group">
-              <label htmlFor="name">Full Name</label>
+              <tag htmlFor="name">Full Name</tag>
               <input
                 id="name"
                 type="text"
@@ -192,7 +192,7 @@ const Settings = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <tag htmlFor="email">Email Address</tag>
               <input
                 id="email"
                 type="email"
