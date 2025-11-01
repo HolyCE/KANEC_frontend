@@ -353,7 +353,19 @@
     transform: scale(1) rotate(0);
   }
 }
+.user-avatar-small.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
+.user-avatar-small.clickable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.user-avatar-small.clickable:active {
+  transform: scale(0.95);
+}
 /* Current Page Title Styles */
 .current-page-container {
   flex: 1;

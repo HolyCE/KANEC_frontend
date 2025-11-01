@@ -81,6 +81,10 @@ const DashboardLayout = () => {
     navigate("/signin");
   };
 
+  const handleAvatarClick = () => {
+    navigate('/dashboard/settings');
+  };
+
   const getUserInitials = () => {
     if (!user?.name) return 'U';
     return user.name
@@ -194,8 +198,14 @@ const DashboardLayout = () => {
               <Wallet size={16} className="wallet-icon" />
               <span>{user?.wallet_address}</span>
             </div>
-            {/* Remove notification badge since no endpoint exists */}
-            <div className="user-avatar-small">{getUserInitials()}</div>
+            {/* Clickable user avatar that navigates to settings */}
+            <div 
+              className="user-avatar-small clickable" 
+              onClick={handleAvatarClick}
+              title="Go to Settings"
+            >
+              {getUserInitials()}
+            </div>
           </div>
         </header>
 
