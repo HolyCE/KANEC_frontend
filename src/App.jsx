@@ -25,6 +25,7 @@ import Donations from './pages/dashboard/Donations';
 import AIInsights from './pages/dashboard/AIInsights';
 import Reports from './pages/dashboard/Reports';
 import Settings from './pages/dashboard/Settings';
+import Projects from './pages/Projects';
 
 // ── NEW: About – Fixed path & lowercase route ─────────────────────────────
 import About from './newcomponents/About'; // ← Correct import
