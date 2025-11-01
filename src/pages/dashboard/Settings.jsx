@@ -16,6 +16,10 @@ const Settings = () => {
   const [email, setEmail] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   
+  // Wallet state - DECLARE THESE FIRST
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletBalance, setWalletBalance] = useState('');
+  
   // Password state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -26,16 +30,19 @@ const Settings = () => {
   const [deletePassword, setDeletePassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
-  // Notification preferences (you might want to fetch these from an API)
+  // Notification preferences
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [donationAlerts, setDonationAlerts] = useState(true);
   const [monthlyReports, setMonthlyReports] = useState(true);
+
 
   // Load user data on component mount
   useEffect(() => {
     if (user) {
       setName(user.name || '');
       setEmail(user.email || '');
+      setWalletAddress(user.wallet_address || ''); // Set wallet address from user object
+      fetchUserProfile(); // Fetch additional profile data
     }
   }, [user]);
 
@@ -47,9 +54,13 @@ const Settings = () => {
         url: `${API_BASE_URL}${API_CONFIG.auth.profile.url}`,
       });
       
+      console.log('Profile data:', data);
+      
       if (data) {
         setName(data.name || '');
         setEmail(data.email || '');
+        setWalletAddress(data.wallet_address || '');
+        setWalletBalance(data.balance_hbar || '');
       }
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
@@ -78,7 +89,6 @@ const Settings = () => {
       toast.success('Profile updated successfully!');
       setIsEditing(false);
       
-      // If email was changed, user might need to verify it
       if (updateData.email && updateData.email !== user?.email) {
         toast.info('Please verify your new email address');
       }
@@ -148,7 +158,7 @@ const Settings = () => {
     }
   };
 
-  // Wallet disconnect (placeholder - you might want to implement this)
+  // Wallet disconnect
   const handleDisconnectWallet = () => {
     toast.info('Wallet disconnect functionality coming soon');
   };
@@ -178,8 +188,8 @@ const Settings = () => {
           </div>
 
           <div className="settings-form">
-            <div className="form-group">
-              <tag htmlFor="name">Full Name</tag>
+            <div className="form-groups">
+              <label htmlFor="name">Full Name</label>
               <input
                 id="name"
                 type="text"
@@ -191,8 +201,8 @@ const Settings = () => {
               />
             </div>
 
-            <div className="form-group">
-              <tag htmlFor="email">Email Address</tag>
+            <div className="form-groups">
+              <label htmlFor="email">Email Address</label>
               <input
                 id="email"
                 type="email"
@@ -282,18 +292,20 @@ const Settings = () => {
             <div className="wallet-item">
               <div className="wallet-detail">
                 <span className="wallet-label">Connected Wallet</span>
-                <span className="wallet-address">
-                  {user?.wallet_address ? `${user.wallet_address}` : 'Not connected'}
-                </span>
+                {walletAddress && (
+                  <span className="wallet-balance">
+                    Address: {walletAddress} 
+                  </span>
+                )}
               </div>
-              <button 
+              {/* <button 
                 onClick={handleDisconnectWallet}
                 className="disconnect-button"
-                disabled={!user?.wallet_address}
+                disabled={!walletAddress}
               >
                 Disconnect
                 <p className='page-subtitle'>coming soon</p>
-              </button>
+              </button> */}
             </div>
 
             <div className="wallet-item">
@@ -301,8 +313,8 @@ const Settings = () => {
                 <span className="wallet-label">Network</span>
                 <span className="wallet-network">Hedera Mainnet</span>
               </div>
-              <span className={`status-badge ${user?.wallet_address ? 'connected' : 'disconnected'}`}>
-                {user?.wallet_address ? 'Connected' : 'Disconnected'}
+              <span className={`status-badge ${walletAddress ? 'connected' : 'disconnected'}`}>
+                {walletAddress ? 'Connected' : 'Disconnected'}
               </span>
             </div>
           </div>
