@@ -6,8 +6,19 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return <div className="loading-auth">Checking authentication...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666',
+      }}>
+      </div>
+    );
   }
+
 
   if (!isAuthenticated) {
     console.log('User not authenticated, redirecting to signin');

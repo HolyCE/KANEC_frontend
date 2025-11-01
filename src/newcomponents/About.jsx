@@ -12,8 +12,8 @@ const About = () => {
       image: "/LIZZY.png"
     },
     {
-      name: "Akinrogunde Omomijudeoluwa",
-      role: "BACKEND & BLOCKCHAIN DEVELOPER",
+      name: "Akinrogunde Omomijolaoluwa",
+      role: "BACKEND, BLOCKCHAIN DEVELOPER, & DevOps ENGINEER",
       image: "/JOLA.jpeg"
     },
     {
