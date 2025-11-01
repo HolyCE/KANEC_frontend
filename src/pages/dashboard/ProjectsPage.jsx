@@ -183,7 +183,6 @@ const ProjectsPage = () => {
   return (
     <div className="projects-page">
       <div className="projects-header">
-        <h1 className="projects-title">Projects</h1>
         <p className="projects-subtitle">
           Discover and support verified social impact projects
         </p>

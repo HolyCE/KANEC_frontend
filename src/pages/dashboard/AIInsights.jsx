@@ -220,7 +220,6 @@ const AIInsights = () => {
     <div className="ai-insights-page">
       <div className="insights-header">
         <div>
-          <h1 className="insights-title">AI Insights</h1>
           <p className="insights-subtitle">Personalized recommendations and giving patterns</p>
         </div>
         <button

@@ -225,10 +225,10 @@ const Dashboard = () => {
     <div className="dashboard-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Dashboard</h1>
           <p className="page-subtitle">
             Welcome back{user?.name ? `, ${user.name}` : ''}! Here's your impact overview.
           </p>
+          <br />
         </div>
       </div>
 
