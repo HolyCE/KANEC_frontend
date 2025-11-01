@@ -69,11 +69,6 @@
   gap: 0.5rem;
 }
 
-.form-group label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: hsl(var(--foreground)) !important;
-}
 
 .save-button {
   align-self: flex-start;

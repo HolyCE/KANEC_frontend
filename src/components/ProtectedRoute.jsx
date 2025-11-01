@@ -23,12 +23,24 @@ const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated) {
     console.log('User not authenticated, redirecting to signin');
     
-    // Save the attempted URL for redirect after login in both storages
     const redirectPath = location.pathname + location.search;
-    localStorage.setItem('redirectAfterLogin', redirectPath);
-    sessionStorage.setItem('redirectAfterLogin', redirectPath);
     
-    console.log('Saved redirect path:', redirectPath);
+    // ONLY save non-dashboard paths for redirect
+    const isDashboardPath = redirectPath.startsWith('/dashboard');
+    const isAuthPath = ['/signin', '/signup', '/verify-email'].includes(location.pathname);
+    
+    if (!isDashboardPath && !isAuthPath) {
+      // Save the attempted URL for redirect after login
+      localStorage.setItem('redirectAfterLogin', redirectPath);
+      sessionStorage.setItem('redirectAfterLogin', redirectPath);
+      console.log('Saved redirect path:', redirectPath);
+    } else {
+      // Clear any existing dashboard redirect paths
+      localStorage.removeItem('redirectAfterLogin');
+      sessionStorage.removeItem('redirectAfterLogin');
+      console.log('Cleared dashboard redirect path:', redirectPath);
+    }
+    
     return <Navigate to="/signin" replace />;
   }
 

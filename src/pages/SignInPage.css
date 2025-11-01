@@ -115,8 +115,8 @@
   gap: 0.8rem;
 }
 
-.forms-group label {
-  font-size: 0.68rem;
+.form-group label {
+  font-size: 0.98rem;
   color: #000000 !important;
   font-weight: 500;
 }
