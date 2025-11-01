@@ -61,16 +61,16 @@ const Reports = () => {
   };
 
   const formatCurrency = (amount) => {
-    return `₦${parseInt(amount).toLocaleString()}`;
+    return `ℏ${parseInt(amount).toLocaleString()}`;
   };
 
   const formatCompactCurrency = (amount) => {
     if (amount >= 1000000) {
-      return `₦${(amount / 1000000).toFixed(1)}M`;
+      return `ℏ${(amount / 1000000).toFixed(1)}M`;
     } else if (amount >= 1000) {
-      return `₦${(amount / 1000).toFixed(1)}K`;
+      return `ℏ${(amount / 1000).toFixed(1)}K`;
     }
-    return `₦${parseInt(amount)}`;
+    return `ℏ${parseInt(amount)}`;
   };
 
   if (loading) {
@@ -105,7 +105,7 @@ const Reports = () => {
             <Users size={18} className="stat-icon blue" />
           </div>
           <h3 className="stat-value">
-            {globalStats ? formatCompactCurrency(globalStats.average_donation) : "₦0"}
+            {globalStats ? formatCompactCurrency(globalStats.average_donation) : "ℏ0"}
           </h3>
           <p className="stat-trend positive">
             <TrendingUp size={14} />
@@ -119,7 +119,7 @@ const Reports = () => {
             <Wallet size={18} className="stat-icon yellow" />
           </div>
           <h3 className="stat-value">
-            {globalStats ? formatCompactCurrency(globalStats.total_amount_raised) : "₦0"}
+            {globalStats ? formatCompactCurrency(globalStats.total_amount_raised) : "ℏ0"}
           </h3>
           <p className="stat-trend positive">
             <TrendingUp size={14} />
