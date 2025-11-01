@@ -229,22 +229,27 @@
     flex-direction: column;
     width: 100%;
     gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
+    height: 100%;
+  
   }
 
   .btn-signin,
   .btn-contact {
     width: 100%;
     text-align: center;
-    padding: 0.875rem 0;
-    font-size: 1.1rem;
+    padding: 0.5rem 4;
+    font-size: 1.2rem;
     border-radius: 25px;
     font-weight: 600;
+    height: 7%;
+    
   }
 
   .btn-signin {
-    background: black;
+    background: hsl(var(--accent));
     color: white;
+    padding: 0.2rem;
   }
 
   .btn-signin:hover {
@@ -256,6 +261,8 @@
     background: transparent;
     color: hsl(var(--accent));
     border: 2px solid hsl(var(--accent));
+    padding: 3px;
+    
   }
 
   .btn-contact:hover {

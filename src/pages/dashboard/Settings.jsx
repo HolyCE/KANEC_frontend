@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Wallet, Bell, Sun, Moon, LogOut, Save, Key, Trash2, Mail, Shield, Palette } from 'lucide-react';
+import { User, Wallet, Bell, Sun, Moon, LogOut, Save, Key, Trash2, Mail, Shield, Palette, Monitor } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { API_CONFIG, API_BASE_URL } from '../../api/config';
@@ -9,7 +9,7 @@ import './Settings.css';
 
 const Settings = () => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, currentTheme, setTheme } = useTheme();
   
   // Profile state
   const [name, setName] = useState('');
@@ -155,6 +155,7 @@ const Settings = () => {
     }
   };
 
+  // ADD THIS MISSING FUNCTION
   const handleLogout = () => {
     logout();
   };
@@ -187,7 +188,7 @@ const Settings = () => {
           <div className="card-content">
             <div className="form-grid">
               <div className="form-groups">
-                <label className="form-labels">Full Name</label>
+                <label className="form-label">Full Name</label>
                 <input
                   type="text"
                   value={name}
@@ -199,7 +200,7 @@ const Settings = () => {
               </div>
 
               <div className="form-groups">
-                <label className="form-labels">Email Address</label>
+                <label className="form-label">Email Address</label>
                 <input
                   type="email"
                   value={email}
@@ -242,7 +243,7 @@ const Settings = () => {
             <div className="card-content">
               <div className="form-grid">
                 <div className="form-groups">
-                  <label className="form-labels">Current Password</label>
+                  <label className="form-label">Current Password</label>
                   <input
                     type="password"
                     value={currentPassword}
@@ -253,7 +254,7 @@ const Settings = () => {
                 </div>
 
                 <div className="form-groups">
-                  <label className="form-labels">New Password</label>
+                  <label className="form-label">New Password</label>
                   <input
                     type="password"
                     value={newPassword}
@@ -264,7 +265,7 @@ const Settings = () => {
                 </div>
 
                 <div className="form-groups">
-                  <label className="form-labels">Confirm New Password</label>
+                  <label className="form-label">Confirm New Password</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -387,7 +388,7 @@ const Settings = () => {
             </div>
             <div className="card-title">
               <h2>Appearance</h2>
-              <p>Customize your interface</p>
+              <p>Customize your interface appearance</p>
             </div>
           </div>
 
@@ -395,23 +396,46 @@ const Settings = () => {
             <div className="theme-selector">
               <div className="theme-option">
                 <button
+                  className={`theme-card ${theme === 'system' ? 'active' : ''}`}
+                  onClick={() => setTheme('system')}
+                >
+                  <Monitor className="theme-icon" />
+                  {theme === 'system' && (
+                    <span className="theme-badge">Current</span>
+                  )}
+                </button>
+              </div>
+              <div className="theme-option">
+                <button
                   className={`theme-card ${theme === 'light' ? 'active' : ''}`}
-                  onClick={() => toggleTheme()}
+                  onClick={() => setTheme('light')}
                 >
                   <Sun className="theme-icon" />
-                  <span>Light</span>
+                  {theme === 'light' && (
+                    <span className="theme-badge">Current</span>
+                  )}
                 </button>
               </div>
               <div className="theme-option">
                 <button
                   className={`theme-card ${theme === 'dark' ? 'active' : ''}`}
-                  onClick={() => toggleTheme()}
+                  onClick={() => setTheme('dark')}
                 >
                   <Moon className="theme-icon" />
-                  <span>Dark</span>
+                  {theme === 'dark' && (
+                    <span className="theme-badge">Current</span>
+                  )}
                 </button>
               </div>
             </div>
+            
+            {theme === 'system' && (
+              <div className="system-theme-info">
+                <p className="system-info-text">
+                  Using system preference: <strong>{currentTheme === 'dark' ? 'Dark' : 'Light'} mode</strong>
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -423,23 +447,12 @@ const Settings = () => {
             </div>
             <div className="card-title">
               <h2>Danger Zone</h2>
-              <p>Irreversible actions</p>
+              <p>This action is ireversable</p>
             </div>
           </div>
 
           <div className="card-content">
             <div className="danger-actions">
-              <div className="danger-action">
-                <div className="action-info">
-                  <h3>Logout</h3>
-                  <p>Sign out of your account from this device</p>
-                </div>
-                <button onClick={handleLogout} className="logout-btn">
-                  <LogOut size={16} />
-                  Logout
-                </button>
-              </div>
-
               <div className="danger-action">
                 <div className="action-info">
                   <h3>Delete Account</h3>
@@ -450,7 +463,7 @@ const Settings = () => {
                   className="delete-btn"
                 >
                   <Trash2 size={16} />
-                  Delete Account
+                  Delete
                 </button>
               </div>
             </div>
@@ -461,8 +474,8 @@ const Settings = () => {
       {/* Delete Account Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="modal-overlay">
-          <div className="modal-card">
-            <div className="modal-header">
+          <div className="modal-cards">
+            <div className="modal-headers">
               <Trash2 className="modal-icon" />
               <h3>Delete Account</h3>
             </div>
@@ -479,7 +492,7 @@ const Settings = () => {
                 />
               </div>
             </div>
-            <div className="modal-actions">
+            <div className="modal-action">
               <button 
                 onClick={() => setShowDeleteConfirm(false)}
                 className="cancel-btn"
@@ -491,7 +504,7 @@ const Settings = () => {
                 className="confirm-delete-btn"
                 disabled={!deletePassword}
               >
-                Delete Account
+                Delete
               </button>
             </div>
           </div>

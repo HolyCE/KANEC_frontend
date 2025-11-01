@@ -59,7 +59,6 @@
   height: 48px;
   background: hsl(var(--primary) / 0.1);
   border-radius: 12px;
-  color: hsl(var(--primary));
   flex-shrink: 0;
 }
 
@@ -314,7 +313,8 @@ input:checked + .toggle-slider:before {
 }
 
 .theme-selector {
-  display: grid;
+  display: flex;
+  justify-content: center;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
@@ -324,13 +324,14 @@ input:checked + .toggle-slider:before {
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  padding: 1.5rem 1rem;
   border: 2px solid hsl(var(--border));
   border-radius: 0.75rem;
   background: hsl(var(--background));
   color: hsl(var(--foreground));
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 70px;
+  min-height: 20px !important;
 }
 
 .theme-card:hover {
@@ -354,8 +355,8 @@ input:checked + .toggle-slider:before {
 }
 
 .danger-actions {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  flex-direction: row;
   gap: 1rem;
 }
 
@@ -393,6 +394,7 @@ input:checked + .toggle-slider:before {
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
+  width: 100%;
 }
 
 .logout-btn:hover {
@@ -432,7 +434,7 @@ input:checked + .toggle-slider:before {
   backdrop-filter: blur(4px);
 }
 
-.modal-card {
+.modal-cards {
   background: hsl(var(--card));
   border-radius: 1rem;
   padding: 2rem;
@@ -441,7 +443,7 @@ input:checked + .toggle-slider:before {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-.modal-header {
+.modal-headers {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -449,12 +451,11 @@ input:checked + .toggle-slider:before {
 }
 
 .modal-icon {
+  background: hsl(var(--destructive) / 0.1);
   color: hsl(var(--destructive));
-  width: 20px;
-  height: 20px;
 }
 
-.modal-header h3 {
+.modal-headers h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: hsl(var(--foreground));
@@ -470,7 +471,7 @@ input:checked + .toggle-slider:before {
   margin-bottom: 1rem;
 }
 
-.modal-actions {
+.modal-action {
   display: flex;
   gap: 0.75rem;
 }
@@ -484,6 +485,7 @@ input:checked + .toggle-slider:before {
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 10%;
 }
 
 .cancel-btn:hover {
@@ -499,6 +501,7 @@ input:checked + .toggle-slider:before {
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 10%;
 }
 
 .confirm-delete-btn:hover:not(:disabled) {
@@ -509,6 +512,57 @@ input:checked + .toggle-slider:before {
   background: hsl(var(--muted));
   cursor: not-allowed;
 }
+
+/* System theme styles */
+.theme-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.theme-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  border: 2px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 100px;
+}
+
+.system-theme-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
+}
+
+.system-info-text {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+  text-align: center;
+}
+
+.system-info-text strong {
+  color: hsl(var(--foreground));
+}
+
+/* Import the Monitor icon if not already imported */
+/* Add to your imports: import { Monitor, Sun, Moon } from 'lucide-react'; */
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
@@ -550,7 +604,7 @@ input:checked + .toggle-slider:before {
     justify-content: center;
   }
 
-  .modal-actions {
+  .modal-action {
     flex-direction: column;
   }
 }
@@ -564,7 +618,7 @@ input:checked + .toggle-slider:before {
     font-size: 1.75rem;
   }
 
-  .modal-card {
+  .modal-cards {
     padding: 1.5rem;
   }
 }
