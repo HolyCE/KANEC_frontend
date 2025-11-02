@@ -4,12 +4,12 @@ import { ArrowLeft, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { API_CONFIG, API_BASE_URL } from '../api/config';
-import { useAuth } from '../contexts/AuthContext'; // Add this import
+import { useAuth } from '../contexts/AuthContext';
 import './SignInPage.css';
 
 const SignInPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Add this hook
+  const { login } = useAuth();
 
   const [isSignIn, setIsSignIn] = useState(true);
   const [email, setEmail] = useState('');
@@ -28,10 +28,10 @@ const SignInPage = () => {
     hasSpecialChar: false,
   });
 
-  // Forgot password state
+  // Forgot password state - FIXED: Initialize OTP as array for 6 digits
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordStep, setForgotPasswordStep] = useState(1);
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '', '', '']); // Fixed: Initialize as array
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -45,7 +45,6 @@ const SignInPage = () => {
     if (!token || !isAuth) sessionStorage.clear();
     console.log('Session check:', { token: !!token, isAuth: !!isAuth });
   }, []);
-
 
   // Password validation effect
   useEffect(() => {
@@ -61,6 +60,47 @@ const SignInPage = () => {
       console.log('Password validation:', validation);
     }
   }, [password, isSignIn]);
+
+  // OTP input handlers - ADDED: Proper OTP handling functions
+  const handleOtpChange = (index, value) => {
+    if (!/^\d?$/.test(value)) return;
+    
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text');
+    const pastedNumbers = pastedData.replace(/\D/g, '').slice(0, 6).split('');
+    
+    const newOtp = [...otp];
+    pastedNumbers.forEach((num, index) => {
+      if (index < 6) newOtp[index] = num;
+    });
+    
+    setOtp(newOtp);
+    
+    // Focus the next empty input or last one
+    const nextEmptyIndex = newOtp.findIndex(val => val === '');
+    const focusIndex = nextEmptyIndex === -1 ? 5 : nextEmptyIndex;
+    const nextInput = document.getElementById(`otp-input-${focusIndex}`);
+    if (nextInput) nextInput.focus();
+  };
 
   const validateSignup = () => {
     console.log('Validating signup form...');
@@ -150,7 +190,7 @@ const SignInPage = () => {
 
         console.log('Redirecting to:', redirectTo);
         navigate(redirectTo, { replace: true });
-          } 
+      } 
       else {
         // SIGN UP
         console.log('Starting sign up process...');
@@ -264,31 +304,36 @@ const SignInPage = () => {
     }
   }, [email, password]);
 
-  // Forgot password logic
+  // Forgot password logic - FIXED: Proper OTP handling
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+    console.log('=== FORGOT PASSWORD DEBUG ===');
+    console.log('Step:', forgotPasswordStep);
+    console.log('Email:', email);
+    console.log('OTP:', otp);
+    console.log('OTP String:', otp.join(''));
+    console.log('New Password:', newPassword);
+    console.log('Confirm Password:', confirmPassword);
+    
     setLoading(true);
 
     try {
       if (forgotPasswordStep === 1) {
-        await axios({
+        console.log('📧 Step 1: Sending forgot password request...');
+        const response = await axios({
           method: API_CONFIG.auth.forgotPassword.method,
           url: `${API_BASE_URL}${API_CONFIG.auth.forgotPassword.url}`,
           data: { email },
           headers: { 'Content-Type': 'application/json' },
         });
+        console.log('✅ Forgot password response:', response.data);
         toast.success('OTP sent to your email!');
         setForgotPasswordStep(2);
+        
       } else if (forgotPasswordStep === 2) {
-        await axios({
-          method: API_CONFIG.auth.verifyEmail.method,
-          url: `${API_BASE_URL}${API_CONFIG.auth.verifyEmail.url}`,
-          data: { email, otp },
-          headers: { 'Content-Type': 'application/json' },
-        });
-        toast.success('OTP verified!');
-        setForgotPasswordStep(3);
-      } else if (forgotPasswordStep === 3) {
+        console.log('🔄 Step 2: Resetting password with OTP...');
+        
+        // Validation
         if (newPassword !== confirmPassword) {
           toast.error('Passwords do not match');
           setLoading(false);
@@ -300,30 +345,53 @@ const SignInPage = () => {
           return;
         }
 
-        await axios({
+        const otpString = otp.join('');
+        if (otpString.length !== 6) {
+          toast.error('Please enter the complete 6-digit code');
+          setLoading(false);
+          return;
+        }
+
+        const resetData = { 
+          email, 
+          otp_code: otpString, // FIXED: Use joined OTP string
+          new_password: newPassword
+        };
+        console.log('📤 Reset password data:', resetData);
+        
+        const response = await axios({
           method: API_CONFIG.auth.resetPassword.method,
           url: `${API_BASE_URL}${API_CONFIG.auth.resetPassword.url}`,
-          data: { email, otp, new_password: newPassword },
+          data: resetData,
           headers: { 'Content-Type': 'application/json' },
         });
-
+        
+        console.log('✅ Reset password response:', response.data);
         toast.success('Password reset successful. Please sign in.');
+        
+        // Reset form
         setShowForgotPassword(false);
         setIsSignIn(true);
         setForgotPasswordStep(1);
-        setEmail('');
-        setOtp('');
+        setOtp(['', '', '', '', '', '']); // FIXED: Reset OTP array
         setNewPassword('');
         setConfirmPassword('');
       }
     } catch (err) {
+      console.error('❌ Forgot password error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      
       const msg =
+        err.response?.data?.detail ||
         err.response?.data?.message ||
         (err.response?.data?.errors
           ? Object.values(err.response.data.errors)[0][0]
           : 'Operation failed. Please try again.');
       toast.error(msg);
     } finally {
+      console.log('🏁 Setting loading to false');
       setLoading(false);
     }
   };
@@ -331,8 +399,7 @@ const SignInPage = () => {
   const backToSignIn = () => {
     setShowForgotPassword(false);
     setForgotPasswordStep(1);
-    setEmail('');
-    setOtp('');
+    setOtp(['', '', '', '', '', '']); // FIXED: Reset OTP array
     setNewPassword('');
     setConfirmPassword('');
   };
@@ -359,15 +426,27 @@ const SignInPage = () => {
           {/* Forgot Password */}
           {showForgotPassword ? (
             <>
+              {/* Step Indicator */}
+              <div className="forgot-password-steps">
+                <div className={`step ${forgotPasswordStep >= 1 ? 'active' : ''}`}>
+                  <div className="step-number">1</div>
+                  <div className="step-label">Enter Email</div>
+                </div>
+                <div className={`step-line ${forgotPasswordStep >= 2 ? 'active' : ''}`}></div>
+                <div className={`step ${forgotPasswordStep >= 2 ? 'active' : ''}`}>
+                  <div className="step-number">2</div>
+                  <div className="step-label">Reset Password</div>
+                </div>
+              </div>
+
               <h1 className="auth-title">
                 {forgotPasswordStep === 1 && 'Reset Your Password'}
                 {forgotPasswordStep === 2 && 'Enter Verification Code'}
-                {forgotPasswordStep === 3 && 'Create New Password'}
               </h1>
 
               <form onSubmit={handleForgotPassword} className="auth-form">
                 {forgotPasswordStep === 1 && (
-                  <div className="forms-group">
+                  <div className="form-group">
                     <label>Email</label>
                     <input
                       type="email"
@@ -383,26 +462,30 @@ const SignInPage = () => {
                   <>
                     <div className="form-group">
                       <label>Verification Code</label>
-                      <input
-                        type="text"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        placeholder="000000"
-                        maxLength={6}
-                        required
-                      />
+                      <div className="otp-container">
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                          <input
+                            key={index}
+                            id={`otp-input-${index}`}
+                            type="text"
+                            value={otp[index]}
+                            onChange={(e) => handleOtpChange(index, e.target.value)}
+                            onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                            onPaste={index === 0 ? handleOtpPaste : undefined} // Only handle paste on first input
+                            placeholder="0"
+                            maxLength={1}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            required
+                            className="otp-input"
+                          />
+                        ))}
+                      </div>
+                      <div className="otp-hint">
+                        Enter the 6-digit code sent to your email
+                      </div>
                     </div>
-                    <div className="forgot-password-actions">
-                      <button type="button" onClick={() => setForgotPasswordStep(1)}>Back</button>
-                      <button type="button" onClick={() => toast.success('New OTP sent!')}>
-                        Resend
-                      </button>
-                    </div>
-                  </>
-                )}
 
-                {forgotPasswordStep === 3 && (
-                  <>
                     <div className="form-group">
                       <label>New Password</label>
                       <div className="password-field">
@@ -413,15 +496,10 @@ const SignInPage = () => {
                           placeholder="••••••••"
                           required
                         />
-                        <button type="button" onClick={() => setShowNewPassword(!showNewPassword)}>
+                        <button class="show-pass-btn" type="button" onClick={() => setShowNewPassword(!showNewPassword)}>
                           {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
-                      {newPassword && (
-                        <div style={{ fontSize: '12px', color: newPassword.length >= 6 ? '#10b981' : '#ef4444', marginTop: '4px' }}>
-                          {newPassword.length >= 6 ? 'Password length OK' : 'Password must be at least 6 characters'}
-                        </div>
-                      )}
                     </div>
 
                     <div className="form-group">
@@ -434,28 +512,51 @@ const SignInPage = () => {
                           placeholder="••••••••"
                           required
                         />
-                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        <button class="show-pass-btn" type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                           {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                       {confirmPassword && (
-                        <div style={{ fontSize: '12px', color: newPassword === confirmPassword ? '#10b981' : '#ef4444', marginTop: '4px' }}>
-                          {newPassword === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
+                        <div className={`password-match visible ${newPassword === confirmPassword ? 'matching' : 'not-matching'}`}>
+                          {newPassword === confirmPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
                         </div>
                       )}
                     </div>
-                    <button type="button" onClick={() => setForgotPasswordStep(2)}>Back</button>
+
+                    <div className="forgot-password-actions">
+                      <button type="button" className="back-button" onClick={() => setForgotPasswordStep(1)}>
+                        ← Back
+                      </button>
+                      <button 
+                        type="button" 
+                        className="resend-otp-button"
+                        onClick={() => {
+                          axios({
+                            method: API_CONFIG.auth.forgotPassword.method,
+                            url: `${API_BASE_URL}${API_CONFIG.auth.forgotPassword.url}`,
+                            data: { email },
+                            headers: { 'Content-Type': 'application/json' },
+                          }).then(() => toast.success('New OTP sent!'));
+                        }}
+                      >
+                        Resend Code
+                      </button>
+                    </div>
                   </>
                 )}
 
                 <button type="submit" className="auth-submit-btn" disabled={loading}>
-                  {loading
-                    ? 'Processing...'
-                    : forgotPasswordStep === 1
-                    ? 'Send Code'
-                    : forgotPasswordStep === 2
-                    ? 'Verify'
-                    : 'Reset Password'}
+                  {loading ? (
+                    <span className="loading-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </span>
+                  ) : forgotPasswordStep === 1 ? (
+                    'Send Code'
+                  ) : (
+                    'Reset Password'
+                  )}
                 </button>
               </form>
             </>
@@ -496,37 +597,37 @@ const SignInPage = () => {
                   </div>
                 )}
 
-                  <div className="form-group">
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className={credentialError ? 'input-error' : 'Invalid Email'}
-                    />
-                  </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className={credentialError ? 'input-error' : ''}
+                  />
+                </div>
 
-                  <div className="form-group">
-                    <label>Password</label>
-                    <div className="password-field">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className={credentialError ? 'input-error' : 'Invalid Password'}
-                      />
-                      <button
-                        type="button"
-                        className="show-pass-btn"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <div className="password-field">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className={credentialError ? 'input-error' : ''}
+                    />
+                    <button
+                      type="button"
+                      className="show-pass-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
 
                   {/* Password Strength Indicator for Sign Up */}
                   {!isSignIn && password && (
